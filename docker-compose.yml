@@ -1,20 +1,18 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # Message Broker: The heart of your asynchronous communication
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq_broker
     ports:
-      - "5672:5672"   # RabbitMQ default port
-      - "15672:15672" # Management UI (Login: guest/guest)
+      - "5672:5672"
+      - "15672:15672"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Database: Where your notifications will be persisted
   mongodb:
     image: mongo:latest
     container_name: mongodb_container
@@ -26,7 +24,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Notification Service: Your specific task
   notification-service:
     build: ./notification-service
     container_name: notification_service
@@ -39,18 +36,3 @@ services:
       mongodb:
         condition: service_healthy
     restart: always
-
-  # Ticket Service: The producer (included for testing)
-  ticket-service:
-    build: ./ticket-service
-    container_name: ticket_service
-    ports:
-      - "3000:3000"
-    environment:
-      - RABBITMQ_URL=amqp://rabbitmq
-      - MONGO_URI=mongodb://mongodb:27017/tickets_db
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
