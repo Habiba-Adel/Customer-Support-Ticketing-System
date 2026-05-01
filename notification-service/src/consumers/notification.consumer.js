@@ -21,11 +21,12 @@ async function startConsumer() {
         try {
           const content = JSON.parse(msg.content.toString());
           await handleNotification(content);
+
+          // Confirms success and deletes from queue
+          channel.ack(msg);
         } catch (error) {
           console.error("Error processing message:", error.message);
-          // Handle failure: Requeue the message so it can be tried again,
-          // or send to a Dead Letter Exchange (DLX)
-          // For now, we'll requeue it once
+          // Requeue the message for another attempt.
           channel.nack(msg, false, true);
         }
       }

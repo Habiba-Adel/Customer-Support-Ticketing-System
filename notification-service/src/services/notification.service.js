@@ -4,19 +4,24 @@ async function handleNotification(payload) {
   const { eventType, ticketId, metadata } = payload;
   console.log(`Processing ${eventType} for Ticket: ${ticketId}`);
 
-  // Map events to messages (Strategy Pattern)
   const messages = {
-    ticket_created: "A new ticket has been created.",
-    ticket_updated: "A ticket has been updated.",
-    ticket_resolved: "A ticket has been resolved.",
+    ticket_created: (data) =>
+      `New ticket: "${data.title || "Untitled"}" has been assigned to you.`,
+    ticket_updated: (data) => `Ticket #${data.ticketId} has been updated.`,
+    ticket_resolved: (data) =>
+      `Success! Ticket #${data.ticketId} is now resolved.`,
   };
 
-  const messageText = messages[eventType];
+  // Get the generator function
+  const messageGenerator = messages[eventType];
 
-  if (!messageText) {
+  if (!messageGenerator) {
     console.warn(`Unknown event type received: ${eventType}`);
     return;
   }
+
+  // CALL the function with the metadata/ticketId to get the string
+  const messageText = messageGenerator({ ...metadata, ticketId });
 
   try {
     await Notification.create({
@@ -28,7 +33,3 @@ async function handleNotification(payload) {
     throw error;
   }
 }
-
-module.exports = {
-  handleNotification,
-};
