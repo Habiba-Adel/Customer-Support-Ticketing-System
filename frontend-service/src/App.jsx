@@ -1,24 +1,38 @@
-import './App.css'
-import Sidebar from './components/common/Sidebar'
-import { Routes, Route } from 'react-router-dom';
+import "./App.css";
+import Navbar from "./components/common/Navbar";
+import Sidebar from "./components/common/Sidebar";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
-    
-
-     const userRole = "customer";
-
+  const user = {
+    name: "Zeina",
+    role: "customer",
+    notifications: 2,
+  };
   return (
     <div className="d-flex">
-      <Sidebar role={userRole} />
+      <Sidebar role={user.role} />
 
-      <main className="flex-grow-1 p-4 bg-white">
-        <Routes>
-          <Route path="/customer/tickets" element={<div>My Tickets Page</div>} />
-          <Route path="/customer/notifications" element={<div>Notifications Page</div>} />
-        </Routes>
-      </main>
+      <div className="flex-grow-1 d-flex flex-column overflow-auto">
+        <Navbar
+          role={user.role}
+          userName={user.name}
+          notificationCount={user.notifications}
+        />
+        <main className="flex-grow-1 p-4 bg-white">
+          <Routes>
+            <Route
+              path="/customer/tickets"
+              element={<div>My Tickets Page</div>}
+            />
+            <Route
+              path="/customer/notifications"
+              element={<div>Notifications Page</div>}
+            />
+          </Routes>
+        </main>
+      </div>
     </div>
-      
   );
 }
 
