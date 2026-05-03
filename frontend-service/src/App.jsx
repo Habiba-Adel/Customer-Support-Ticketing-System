@@ -1,6 +1,7 @@
 import "./App.css";
 import Navbar from "./components/common/Navbar";
 import Sidebar from "./components/common/Sidebar";
+import TicketList from "./pages/customer/TicketList";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -23,7 +24,7 @@ function App() {
           <Routes>
             <Route
               path="/customer/tickets"
-              element={<div>My Tickets Page</div>}
+              element={<TicketList/>}
             />
             <Route
               path="/customer/notifications"
