@@ -2,7 +2,7 @@ const express = require("express");
 const connectDB = require("./config/db");
 const { connectRabbitMQ } = require("./config/rabbitmq");
 const startConsumer = require("./consumers/notification.consumer");
-const notificationRoutes = require("./routes/notification.routes");
+const notificationRoutes = require("./routes/notification/notification.routes");
 
 const app = express();
 app.use(express.json());
@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 
 async function start() {
   try {
-    await connectDB();
+    await connectDB(process.env.MONGODB_URI);
     await connectRabbitMQ();
 
     // Start the RabbitMQ worker

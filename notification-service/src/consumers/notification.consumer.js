@@ -21,7 +21,6 @@ async function startConsumer() {
         try {
           const content = JSON.parse(msg.content.toString());
           await handleNotification(content);
-
           // Confirms success and deletes from queue
           channel.ack(msg);
         } catch (error) {

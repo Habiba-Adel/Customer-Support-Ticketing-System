@@ -6,6 +6,9 @@ const notificationSchema = new mongoose.Schema({
   // ID of the user who should see this notification
   userId: String,
   message: String,
+  status: {
+    type: String,
+  },
   read: {
     type: Boolean,
     default: false,
