@@ -1,6 +1,7 @@
 import "./App.css";
 import Navbar from "./components/common/Navbar";
 import Sidebar from "./components/common/Sidebar";
+import Notifications from "./pages/customer/Notifications";
 import TicketList from "./pages/customer/TicketList";
 import { Routes, Route } from "react-router-dom";
 
@@ -28,7 +29,7 @@ function App() {
             />
             <Route
               path="/customer/notifications"
-              element={<div>Notifications Page</div>}
+              element={<Notifications/>}
             />
           </Routes>
         </main>
