@@ -16,8 +16,8 @@ const supportSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pending', 'In Progress', 'Resolved'],
-        default: 'Pending'
+        enum: ['Open', 'In Progress', 'Resolved', 'Closed'],
+        default: 'Open'
     } ,
      messages: [
         {

@@ -56,6 +56,22 @@ exports.addResponse = async (req, res) => {
     }
 };
 
+exports.getTicket = async (req, res) => {
+    try {
+        const { ticketId } = req.params;
+
+        const support = await Support.findOne({ ticketId });
+
+        if (!support) {
+            return res.status(404).json({ message: "Ticket not found" });
+        }
+
+        res.status(200).json(support);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 exports.resolveTicket = async (req, res) => {
     try {
@@ -81,7 +97,7 @@ exports.resolveTicket = async (req, res) => {
     }
 };
 
-exports.getTicket = async (req, res) => {
+exports.closeTicket = async (req, res) => {
     try {
         const { ticketId } = req.params;
 
@@ -91,7 +107,45 @@ exports.getTicket = async (req, res) => {
             return res.status(404).json({ message: "Ticket not found" });
         }
 
-        res.status(200).json(support);
+        support.status = "Closed";
+
+        await support.save();
+
+        res.status(200).json({
+            message: "Ticket closed successfully",
+            data: support
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.reopenTicket = async (req, res) => {
+    try {
+        const { ticketId } = req.params;
+
+        const support = await Support.findOne({ ticketId });
+
+        if (!support) {
+            return res.status(404).json({ message: "Ticket not found" });
+        }
+
+        // only allow reopen if resolved or closed
+        if (!["Resolved", "Closed"].includes(support.status)) {
+            return res.status(400).json({
+                message: "Only resolved or closed tickets can be reopened"
+            });
+        }
+
+        support.status = "In Progress";
+
+        await support.save();
+
+        res.status(200).json({
+            message: "Ticket reopened successfully",
+            data: support
+        });
 
     } catch (error) {
         res.status(500).json({ message: error.message });
