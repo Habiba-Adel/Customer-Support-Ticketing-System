@@ -6,30 +6,43 @@ const TicketSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+
         description: {
             type: String,
             required: true
         },
+
         customerId: {
             type: String,
             required: true
         },
+
         assignedAgentId: {
             type: String,
             default: null
         },
+
         status: {
             type: String,
-            enum: ['Open', 'In Progress', 'Resolved', 'Closed'],
+            enum: ["Open", "In Progress", "Resolved", "Closed"],
             default: "Open"
         },
+
         priority: {
             type: String,
-            enum: ['Low', 'Medium', 'High'],
+            enum: ["Low", "Medium", "High"],
             default: "Medium"
         },
-        createdAt: { type: Date, default: Date.now },
-        resolvedAt: { type: Date }
+
+        resolvedAt: {
+            type: Date,
+            default: null
+        },
+        
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
     }
 
 );
