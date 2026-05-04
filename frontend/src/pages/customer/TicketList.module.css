@@ -1,0 +1,41 @@
+.container {
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.table thead th {
+  color: #6c757d;
+  font-weight: 500;
+  border-top: none;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem;
+}
+
+.table tbody td {
+  padding: 1.2rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+/* Custom badge styling to match your UI precisely */
+.statusBadge {
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  display: inline-block;
+  min-width: 100px;
+  text-align: center;
+}
+
+.statusOpen { background-color: #3b82f6; color: white; }
+.statusInProgress { background-color: #f59e0b; color: white; }
+.statusClosed { background-color: #10b981; color: white; }

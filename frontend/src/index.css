@@ -1,0 +1,34 @@
+:root {
+  /* Brand Colors from image_dfb95e_3.png */
+  --primary-color: #0045DD;
+  --neutral-white: #FDFDFD;
+  --neutral-black: #020714;
+  --neutral-gray: #787878;
+  --neutral-light-gray: #ECECF0;
+  --accents-color: #8B5CF6;
+
+  /* Status Colors from image_dfb95e_4.png */
+  --open-status: #3B82F6;
+  --in-progress-status: #F59E0B;
+  --closed-status: #10B981;
+  --urgent-error-status: #EF4444;
+}
+
+body {
+  background-color: var(--neutral-white);
+  color: var(--neutral-black);
+  font-family: 'Inter', sans-serif; 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a{
+  text-decoration: none;
+}
+ul{
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+

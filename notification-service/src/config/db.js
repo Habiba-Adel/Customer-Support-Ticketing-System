@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-  const dbUrl = "mongodb://mongodb:27017/notifications_db";
+  const dbUrl = process.env.MONGODB_URI;
 
   try {
     await mongoose.connect(dbUrl);
