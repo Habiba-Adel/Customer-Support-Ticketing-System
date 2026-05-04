@@ -1,3 +1,8 @@
+#this is called multistage build 
+
+
+
+
 # ── Stage 1: Build the React app ──────────────────────────────
 FROM node:20-alpine AS builder
 
