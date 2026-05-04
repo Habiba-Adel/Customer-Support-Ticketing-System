@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import styles from './Sidebar.module.css'
-export default function Sidebar({role="customer"}) {
+export default function Sidebar({ role = "customer" }) {
   const menuConfig = {
     customer: {
       portalName: "Customer Portal",
@@ -15,8 +15,8 @@ export default function Sidebar({role="customer"}) {
       basePath: "/agent",
       items: [
         // { path: "all-tickets", label: "All Tickets", icon: "bi-ticket-detailed" },
-        { path: "reports", label: "Reports", icon: "bi-graph-up-arrow" },
         { path: "workspace", label: "My Workspace", icon: "bi-briefcase" },
+        { path: "reports", label: "Reports", icon: "bi-graph-up-arrow" },
       ],
     },
   };
@@ -25,12 +25,12 @@ export default function Sidebar({role="customer"}) {
   const config = menuConfig[role] || menuConfig.customer;
 
   return (
-<div className={styles.sidebar}>
+    <div className={styles.sidebar}>
       {/* Header Section */}
       <div className="mb-3">
         <h4 className={`text-primary fw-bold mb-0 ${styles.portalName}`}>Support System</h4>
         <small className={`text-muted ${styles.portalName}`}>{config.portalName}</small>
-       
+
         {/* <div className="d-block d-lg-none text-primary fw-bold fs-4 text-center"></div> */}
       </div>
 
@@ -42,7 +42,7 @@ export default function Sidebar({role="customer"}) {
           <li className="nav-item mb-2" key={item.path}>
             <NavLink
               to={`${config.basePath}/${item.path}`}
-              className={({ isActive }) => 
+              className={({ isActive }) =>
                 `${styles.navLink} ${isActive ? styles.activeLink : ''}`
               }
             >
@@ -54,5 +54,5 @@ export default function Sidebar({role="customer"}) {
       </ul>
     </div>
   );
-  
+
 }

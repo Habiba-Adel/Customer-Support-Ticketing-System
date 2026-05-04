@@ -1,5 +1,12 @@
+import styles from './Sidebar.module.css';
+import { useNavigate } from 'react-router-dom';
 
-function Navbar({ role, userName, notificationCount = 0 }) {
+function Navbar({ role, userName, notificationCount = 0, onLogout }) {
+  const navigate = useNavigate();
+  const handleLogoutClick = () => {
+    onLogout();
+    navigate('/auth');
+  };
   return (
     <nav className="navbar navbar-expand bg-white border-bottom px-4 py-3 sticky-top">
       <div className="container-fluid d-flex justify-content-end align-items-center">
@@ -30,6 +37,16 @@ function Navbar({ role, userName, notificationCount = 0 }) {
           style={{ backgroundColor: '#0a0c14', borderRadius: '10px' }}
         >
           Hello, {userName}
+        </button>
+
+        {/* Logout Button */}
+        <button
+          className={styles.logoutBtn}
+          onClick={handleLogoutClick}
+          title="Logout"
+        >
+          <i className="bi bi-box-arrow-right me-2"></i>
+          Logout
         </button>
       </div>
     </nav>
