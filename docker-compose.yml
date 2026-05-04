@@ -1,8 +1,6 @@
 version: "3.8"
 
 services:
-
-
   mongodb:
     image: mongo:7
     container_name: mongodb
@@ -124,7 +122,6 @@ services:
     networks:
       - app-network
 
-
   # ─────────────────────────────────────────
   # MONITORING
   # ─────────────────────────────────────────
@@ -153,14 +150,12 @@ services:
   #   networks:
   #     - app-network
 
-
 volumes:
-# we will have just one mongodb application and inside it each service will have its own db
+  # we will have just one mongodb application and inside it each service will have its own db
   mongo-data:
   rabbitmq-data:
   # prometheus-data:
   # grafana-data:
-
 
 networks:
   app-network:
