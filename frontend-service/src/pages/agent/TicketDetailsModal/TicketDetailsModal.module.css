@@ -1,0 +1,61 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Using 60% opacity for the dark overlay to keep it logical and professional */
+  background: rgba(2, 7, 20, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modalContent {
+  background: var(--neutral-white);
+  width: 700px;
+  max-width: 90%;
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.historyBox {
+  background-color: var(--neutral-light-gray);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 1rem;
+}
+
+.message {
+  background: var(--neutral-white);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  border-left: 4px solid var(--primary-color);
+}
+
+.readOnlyFooter {
+  text-align: center;
+  color: var(--neutral-gray);
+  font-style: italic;
+}
+
+.resolveBtn {
+  background-color: var(--closed-status); /* #10B981 */
+  color: var(--neutral-white);
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.resolveBtn:hover {
+  opacity: 0.9;
+}

@@ -1,0 +1,97 @@
+.workspaceContainer {
+  padding: 2rem;
+  background-color: var(--neutral-white); /* #FDFDFD */
+}
+
+/* Stats Cards */
+.statCard {
+  border-radius: 12px;
+  border: none;
+  padding: 1.5rem;
+  color: var(--neutral-white);
+  min-height: 120px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+}
+
+.tabBtn {
+  border: none;
+  background: none;
+  padding: 10px 24px;
+  font-weight: 600;
+  color: var(--neutral-gray); /* #787878 */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.activeTab {
+  background-color: var(--neutral-black) !important; /* #020714 */
+  color: var(--neutral-white) !important;
+  border-radius: 8px;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(2, 7, 20, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modalContent {
+  background: var(--neutral-white);
+  width: 800px;
+  max-width: 95%;
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Chat Bubbles in Modal */
+.chatBubble {
+  background: var(--neutral-light-gray);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+.agentBubble {
+  background: #ebf5ff;
+  border-left: 4px solid var(--primary-color);
+}
+
+.sendBtn {
+  background-color: var(--neutral-black);
+  color: var(--neutral-white);
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.resolveBtn {
+  background-color: var(--closed-status);
+  color: var(--neutral-white);
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.resolveBtn:hover {
+  opacity: 0.9;
+}
