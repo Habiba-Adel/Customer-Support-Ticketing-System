@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './TicketDetailsModal.module.css';
 
 export default function TicketDetailModal({ ticket, onClose }) {

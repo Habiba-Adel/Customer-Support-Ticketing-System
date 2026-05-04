@@ -3,6 +3,10 @@ import styles from './workspace/Workspace.module.css';
 export default function TicketModal({ ticket, onClose }) {
   if (!ticket) return null;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> frontend
   const isReadOnly = ticket.isReadOnly || ticket.status === "Closed";
 
   const getPriorityStyle = (priority) => {
@@ -17,6 +21,10 @@ export default function TicketModal({ ticket, onClose }) {
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
+<<<<<<< HEAD
+=======
+        {/* Header */}
+>>>>>>> frontend
         <div className="d-flex justify-content-between align-items-start mb-4">
           <div>
             <h4 className="fw-bold mb-1">Ticket #{ticket.id}</h4>
@@ -25,6 +33,10 @@ export default function TicketModal({ ticket, onClose }) {
           <button className="btn-close" onClick={onClose}></button>
         </div>
 
+<<<<<<< HEAD
+=======
+        {/* Info Grid */}
+>>>>>>> frontend
         <div className="row g-3 mb-4 bg-light p-3 rounded mx-0">
           <div className="col-4">
             <small className="text-muted d-block">Status</small>
@@ -47,6 +59,10 @@ export default function TicketModal({ ticket, onClose }) {
           </div>
         </div>
 
+<<<<<<< HEAD
+=======
+        {/* History */}
+>>>>>>> frontend
         <h6 className="fw-bold mb-3">Interaction History</h6>
         <div className="mb-4" style={{ maxHeight: '300px', overflowY: 'auto' }}>
           <div className={styles.chatBubble}>
@@ -59,6 +75,10 @@ export default function TicketModal({ ticket, onClose }) {
           </div>
         </div>
 
+<<<<<<< HEAD
+=======
+        {/* Footer:Conditional Rendering based on isReadOnly */}
+>>>>>>> frontend
         {!isReadOnly ? (
           <div className="d-flex gap-2 pt-3 border-top">
             <input
@@ -78,4 +98,8 @@ export default function TicketModal({ ticket, onClose }) {
       </div>
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> frontend
