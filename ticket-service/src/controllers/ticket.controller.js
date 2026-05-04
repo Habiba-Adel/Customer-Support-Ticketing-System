@@ -1,131 +1,38 @@
 const Ticket = require("../models/ticket.model");
 const { publishEvent } = require("../config/rabbitmq");
 
-// Create Ticket
+// CREATE
 exports.createTicket = async (req, res) => {
-  try {
-    const ticket = await Ticket.create({
-      ...req.body,
-      customerId: req.user.id,
-      status: "Open"
-    });
+  const ticket = await Ticket.create({
+    title: req.body.title,
+    description: req.body.description,
+    customerId: req.user.id,
+    status: "Open",
+    priority: "Medium"
+  });
 
-    await publishEvent({
-      type: "ticket_created",
-      data: ticket
-    });
+  publishEvent({
+    event: "ticket_created",
+    ticketId: ticket._id.toString(),
+    data: ticket
+  });
 
-    res.status(201).json(ticket);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  return res.status(201).json(ticket);
 };
 
-// Get All Tickets
+// GET ALL
 exports.getTickets = async (req, res) => {
-  try {
-    const tickets = await Ticket.find().sort({ createdAt: -1 });
-    res.json(tickets);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  const tickets = await Ticket.find().sort({ createdAt: -1 });
+  return res.json(tickets);
 };
 
-// Get Single Ticket
+// GET BY ID
 exports.getTicketById = async (req, res) => {
-  try {
-    const ticket = await Ticket.findById(req.params.id);
+  const ticket = await Ticket.findById(req.params.id);
 
-    if (!ticket) {
-      return res.status(404).json({
-        message: "Ticket not found"
-      });
-    }
-
-    res.json(ticket);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (!ticket) {
+    return res.status(404).json({ message: "Ticket not found" });
   }
-};
 
-// Update Ticket
-exports.updateTicket = async (req, res) => {
-  try {
-    const ticket = await Ticket.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-
-    if (!ticket) {
-      return res.status(404).json({
-        message: "Ticket not found"
-      });
-    }
-
-    await publishEvent({
-      type: "ticket_updated",
-      data: ticket
-    });
-
-    res.json(ticket);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Update Status (called from Support Service)
-exports.updateStatus = async (req, res) => {
-  try {
-    const ticket = await Ticket.findById(req.params.id);
-
-    if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found" });
-    }
-
-    if (!req.body.status) {
-      return res.status(400).json({ message: "status is required" });
-    }
-
-    ticket.status = req.body.status;
-
-    if (req.body.assignedAgentId) {
-      ticket.assignedAgentId = req.body.assignedAgentId;
-    }
-
-    if (req.body.status === "Resolved") {
-      ticket.resolvedAt = new Date();
-    }
-
-    await ticket.save();
-
-    await publishEvent({
-      type: "ticket_status_updated",
-      data: ticket
-    });
-
-    res.json(ticket);
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
-};
-// Delete Ticket
-exports.deleteTicket = async (req, res) => {
-  try {
-    const ticket = await Ticket.findByIdAndDelete(req.params.id);
-
-    if (!ticket) {
-      return res.status(404).json({
-        message: "Ticket not found"
-      });
-    }
-
-    res.json({
-      message: "Ticket deleted successfully"
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  return res.json(ticket);
 };
