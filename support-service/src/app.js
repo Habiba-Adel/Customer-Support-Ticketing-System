@@ -10,7 +10,7 @@ const app = express()
 const PORT =process.env.PORT || 3002
 app.use(express.json());
 
-const mongoURI = process.env.MONGO_URI;
+const mongoURI = process.env.MONGODB_URI;
 
 mongoose.connect(mongoURI)
     .then(() => console.log("Connected to MongoDB Atlas successfully!"))
