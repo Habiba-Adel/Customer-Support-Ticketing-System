@@ -1,0 +1,39 @@
+.reportsContainer {
+  background-color: var(--neutral-white); /* #FDFDFD */
+  padding: 1.5rem;
+}
+
+.statCard {
+  border: none !important;
+  border-radius: 10px !important;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+}
+
+.cardTitle {
+  color: var(--neutral-black);
+  font-weight: 700;
+}
+
+.mainValue {
+  color: var(--primary-color);
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.statLabel {
+  color: var(--neutral-gray);
+  font-size: 0.9rem;
+}
+
+.progressBarContainer {
+  height: 8px;
+  background-color: var(--neutral-light-gray);
+  border-radius: 10px;
+  overflow: hidden;
+}

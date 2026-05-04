@@ -14,7 +14,7 @@ export default function Sidebar({role="customer"}) {
       portalName: "Agent Portal",
       basePath: "/agent",
       items: [
-        { path: "all-tickets", label: "All Tickets", icon: "bi-ticket-detailed" },
+        // { path: "all-tickets", label: "All Tickets", icon: "bi-ticket-detailed" },
         { path: "reports", label: "Reports", icon: "bi-graph-up-arrow" },
         { path: "workspace", label: "My Workspace", icon: "bi-briefcase" },
       ],
