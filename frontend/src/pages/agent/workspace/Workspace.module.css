@@ -95,3 +95,19 @@
 .resolveBtn:hover {
   opacity: 0.9;
 }
+
+.prioritySelect {
+  min-width: 100px;
+  transition: all 0.3s ease;
+  background-image: none !important;
+}
+
+.prioritySelect:focus {
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+  outline: none;
+}
+
+.prioritySelect option {
+  background-color: var(--neutral-white);
+  color: var(--neutral-black);
+}
