@@ -108,6 +108,11 @@
 }
 
 .prioritySelect option {
+<<<<<<< HEAD
   background-color: var(--neutral-white);
   color: var(--neutral-black);
+=======
+  background-color: white;
+  color: black;
+>>>>>>> frontend
 }

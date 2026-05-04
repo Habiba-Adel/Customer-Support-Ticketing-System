@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+**/.env
+
+# Keep the example env files but ignore real ones
+!.env.example
+!.env.dev.example
+!.env.test.example
+!.env.prod.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Docker
+.docker/
+
+# Kubernetes secrets (never commit real secrets)
+k8s/**/*secret*.yml
+k8s/**/*secret*.yaml
+
+# IDE folders
+.vscode/
+.idea/
+
+# Build output
+dist/
+build/
+EOF
