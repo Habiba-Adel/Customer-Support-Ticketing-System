@@ -1,0 +1,81 @@
+/* Sidebar.module.css */
+.sidebar {
+  transition: width 0.3s ease;
+  width: 80px; /* Default for mobile/tablet */
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa; /* Matches bg-light */
+  height: 100vh;
+  border-right: 1px solid #dee2e6;
+  padding: 1rem;
+}
+
+@media (min-width: 992px) {
+  .sidebar {
+    width: 280px; /* Full width for desktop */
+  }
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: #212529; /* Matches text-dark */
+  transition: background-color 0.2s;
+  justify-content: center;
+}
+
+@media (min-width: 992px) {
+  .navLink {
+    justify-content: flex-start;
+  }
+}
+
+.activeLink {
+  background-color: #0a0c14 !important; /* The dark color from your design */
+  color: white !important;
+}
+
+.label {
+  font-weight: 600;
+  display: none; /* Hide text on small screens */
+}
+
+@media (min-width: 992px) {
+  .label {
+    display: inline; /* Show text on desktop */
+  }
+}
+
+.portalName {
+  display: none;
+}
+
+@media (min-width: 992px) {
+  .portalName {
+    display: block;
+  }
+}
+
+.logoutBtn {
+  background-color: transparent;
+  color: var(--urgent-error-status);
+  border: 1px solid var(--neutral-light-gray);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin: 5px;
+}
+
+.logoutBtn:hover {
+  background-color: #fff5f5;
+  border-color: var(--urgent-error-status);
+}

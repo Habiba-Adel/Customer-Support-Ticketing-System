@@ -1,0 +1,64 @@
+version: "3.8"
+
+# ─────────────────────────────────────────────────────────────────
+# TESTING ENVIRONMENT
+# Run with:
+#   docker compose -f docker-compose.yml -f docker-compose.test.yml up --build
+# ─────────────────────────────────────────────────────────────────
+
+services:
+
+  mongodb:
+    environment:
+      # fresh database names so tests never touch dev data
+      MONGO_INITDB_DATABASE: test
+    ports:
+      - "27018:27017"   # different host port so dev and test run at same time
+
+  rabbitmq:
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+
+  user-service:
+    environment:
+      NODE_ENV: test
+      MONGODB_URI: mongodb://mongodb:27017/user_db_test
+    ports:
+      - "4001:4000"
+
+  ticket-service:
+    environment:
+      NODE_ENV: test
+      MONGODB_URI: mongodb://mongodb:27017/ticket_db_test
+    ports:
+      - "3013:3003"
+
+  support-service:
+    environment:
+      NODE_ENV: test
+      MONGODB_URI: mongodb://mongodb:27017/support_db_test
+    ports:
+      - "3012:3002"
+
+  notification-service:
+    environment:
+      NODE_ENV: test
+      MONGODB_URI: mongodb://mongodb:27017/notification_db_test
+    ports:
+      - "3011:3001"
+
+  reporting-service:
+    environment:
+      NODE_ENV: test
+      MONGO_URI: mongodb://mongodb:27017/reporting_db_test
+    ports:
+      - "3015:3005"
+
+  # prometheus:
+  #   ports:
+  #     - "9091:9090"
+
+  # grafana:
+  #   ports:
+  #     - "3010:3000"

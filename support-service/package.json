@@ -2,15 +2,29 @@
   "name": "support-service",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+<<<<<<< HEAD
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+=======
+    "start": "nodemon src/app.js"
+>>>>>>> frontend
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+<<<<<<< HEAD
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.5.0"
+=======
     "express": "^5.2.1"
+>>>>>>> frontend
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

@@ -4,38 +4,159 @@ services:
   mongodb:
     image: mongo:7
     container_name: mongodb
-    ports:
-      - "27017:27017"
+    restart: unless-stopped
     volumes:
-      - mongo_data:/data/db
+      - mongo-data:/data/db
+    networks:
+      - app-network
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-admin}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  ticket-service:
-    build: ./ticket-service
-    container_name: ticket-service
-    ports:
-      - "3000:3000"
-    env_file:
-      - ./ticket-service/.env
-    depends_on:
-      - mongodb
-      - rabbitmq
+  # ─────────────────────────────────────────
+  # APPLICATION SERVICES
+  # ─────────────────────────────────────────
 
   user-service:
     build: ./user-service
     container_name: user-service
-    ports:
-      - "4000:4000"
-    env_file:
-      - ./user-service/.env
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      MONGODB_URI: mongodb://mongodb:27017/user_db
+      JWT_SECRET: ${JWT_SECRET:-changeme}
     depends_on:
       - mongodb
+    networks:
+      - app-network
+
+  ticket-service:
+    build: ./ticket-service
+    container_name: ticket-service
+    restart: unless-stopped
+    environment:
+      PORT: 3003
+      MONGODB_URI: mongodb://mongodb:27017/ticket_db
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin}@rabbitmq:5672
+      JWT_SECRET: ${JWT_SECRET:-changeme}
+      USER_SERVICE_URL: http://user-service:4000
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      - app-network
+
+  support-service:
+    build: ./support-service
+    container_name: support-service
+    restart: unless-stopped
+    environment:
+      PORT: 3002
+      MONGODB_URI: mongodb://mongodb:27017/support_db
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin}@rabbitmq:5672
+      JWT_SECRET: ${JWT_SECRET:-changeme}
+      TICKET_SERVICE_URL: http://ticket-service:3003
+      USER_SERVICE_URL: http://user-service:4000
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      - app-network
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    restart: unless-stopped
+    environment:
+      PORT: 3001
+      MONGODB_URI: mongodb://mongodb:27017/notification_db
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin}@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    networks:
+      - app-network
+
+  reporting-service:
+    build: ./reporting-service
+    container_name: reporting-service
+    restart: unless-stopped
+    environment:
+      PORT: 3005
+      MONGO_URI: mongodb://mongodb:27017/reporting_db
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin}@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: unless-stopped
+    depends_on:
+      - user-service
+      - ticket-service
+      - support-service
+      - notification-service
+      - reporting-service
+    networks:
+      - app-network
+
+  # ─────────────────────────────────────────
+  # MONITORING
+  # ─────────────────────────────────────────
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus-data:/prometheus
+  #   networks:
+  #     - app-network
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   restart: unless-stopped
+  #   environment:
+  #     GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+  #     GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASS:-admin}
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #   depends_on:
+  #     - prometheus
+  #   networks:
+  #     - app-network
 
 volumes:
-  mongo_data:
+  # we will have just one mongodb application and inside it each service will have its own db
+  mongo-data:
+  rabbitmq-data:
+  # prometheus-data:
+  # grafana-data:
+
+networks:
+  app-network:
+    driver: bridge

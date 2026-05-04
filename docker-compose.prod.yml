@@ -1,0 +1,84 @@
+version: "3.8"
+
+# ─────────────────────────────────────────────────────────────────
+# PRODUCTION ENVIRONMENT
+# Run with:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ─────────────────────────────────────────────────────────────────
+
+services:
+
+  mongodb:
+    restart: always
+    # no ports exposed — mongodb is NOT accessible from outside in production
+    # only reachable by services inside app-network
+
+  rabbitmq:
+    restart: always
+    # no ports exposed in production
+
+  user-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+    # no volume mounts in production — code is baked into the image
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+
+  ticket-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+
+  support-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+
+  notification-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+
+  reporting-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+    
+  frontend:
+    ports:
+      - "80:80"      # in production it runs on standard port 80
+    restart: always
+
+  # prometheus:
+  #   restart: always
+  #   ports:
+  #     - "9090:9090"
+
+  # grafana:
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"

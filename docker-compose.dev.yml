@@ -1,0 +1,70 @@
+version: "3.8"
+
+# ─────────────────────────────────────────────────────────────────
+# DEVELOPMENT ENVIRONMENT
+# Run with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+# ─────────────────────────────────────────────────────────────────
+
+services:
+
+  mongodb:
+    ports:
+      - "27017:27017"   # expose so you can connect with MongoDB Compass
+
+  rabbitmq:
+    ports:
+      - "5672:5672"     # AMQP port
+      - "15672:15672"   # management UI → http://localhost:15672
+
+  user-service:
+    volumes:
+      - ./user-service/src:/app/src       # hot reload
+    environment:
+      NODE_ENV: development
+    ports:
+      - "4000:4000"
+
+  ticket-service:
+    volumes:
+      - ./ticket-service/src:/app/src
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3003:3003"
+
+  support-service:
+    volumes:
+      - ./support-service/src:/app/src
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3002:3002"
+
+  notification-service:
+    volumes:
+      - ./notification-service/src:/app/src
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3001:3001"
+
+  reporting-service:
+    volumes:
+      - ./reporting-service/src:/app/src
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3005:3005"
+  
+  frontend:
+    ports:
+      - "8080:80"    # access the app at http://localhost:8080
+
+  # prometheus:
+  #   ports:
+  #     - "9090:9090"     # Prometheus UI → http://localhost:9090
+
+  # grafana:
+  #   ports:
+  #     - "3000:3000"     # Grafana UI → http://localhost:3000
