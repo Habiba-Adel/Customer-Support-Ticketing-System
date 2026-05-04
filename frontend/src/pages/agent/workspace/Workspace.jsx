@@ -12,8 +12,12 @@ export default function Workspace() {
     { id: 7, title: "Cannot reset password", customer: "Zeina", status: "Open", priority: "Medium", assignedTo: null }
   ]);
 
-  const handlePriorityChange = (id, newPriority) => {
-    setTickets(prev => prev.map(t => t.id === id ? { ...t, priority: newPriority } : t));
+  const handleUpdateTicket = (id, newPriority, newAssignee = null) => {
+    setTickets(prev => prev.map(t =>
+      t.id === id
+        ? { ...t, priority: newPriority, assignedTo: newAssignee !== null ? newAssignee : t.assignedTo }
+        : t
+    ));
   };
 
   const filteredTickets = tickets.filter(t => {
@@ -36,7 +40,6 @@ export default function Workspace() {
     <div className={styles.workspaceContainer}>
       <h3 className="fw-bold mb-4">My Workspace</h3>
 
-      {/* Stats Cards - Updated with dynamic counts */}
       <div className="row g-4 mb-5">
         <div className="col-md-3">
           <div className={styles.statCard} style={{ backgroundColor: 'var(--primary-color)' }}>
@@ -46,7 +49,6 @@ export default function Workspace() {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="d-flex align-items-center mb-4 gap-2">
         <button className={`${styles.tabBtn} ${activeTab === 'unassigned' ? styles.activeTab : ''}`} onClick={() => setActiveTab('unassigned')}>
           Unassigned ({tickets.filter(t => !t.assignedTo).length})
@@ -92,7 +94,7 @@ export default function Workspace() {
                     <select
                       className="form-select form-select-sm border-0 fw-bold text-white text-center"
                       value={t.priority}
-                      onChange={(e) => handlePriorityChange(t.id, e.target.value)}
+                      onChange={(e) => handleUpdateTicket(t.id, e.target.value)}
                       style={{
                         backgroundColor: getPriorityColor(t.priority),
                         borderRadius: '20px',
@@ -108,13 +110,24 @@ export default function Workspace() {
                 </td>
                 <td className="text-center">
                   <div className="d-flex justify-content-center">
-                    {t.status === 'Closed' ? (
+                    {activeTab === 'closed' ? (
                       <button
                         className="btn btn-sm btn-light border px-4"
                         style={{ borderRadius: '8px', fontWeight: '500' }}
                         onClick={() => setSelectedTicket({ ...t, isReadOnly: true })}
                       >
                         View
+                      </button>
+                    ) : activeTab === 'unassigned' ? (
+                      <button
+                        className="btn btn-sm btn-primary px-3"
+                        style={{ borderRadius: '8px', fontWeight: '500', backgroundColor: 'var(--primary-color)', border: 'none' }}
+                        onClick={() => {
+                          handleUpdateTicket(t.id, t.priority, "Hafsa");
+                          setActiveTab('my-active');
+                        }}
+                      >
+                        Assign to me
                       </button>
                     ) : (
                       <button
