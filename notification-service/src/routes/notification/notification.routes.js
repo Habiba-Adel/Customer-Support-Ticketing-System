@@ -7,7 +7,9 @@ router.get("/:userId", async (req, res) => {
   try {
     const notifications = await Notification.find({
       userId: req.params.userId,
-    }).sort({ createdAt: -1 });
+    })
+      .populate("ticketId", "title status")
+      .sort({ createdAt: -1 });
     res.json(notifications);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -17,8 +19,15 @@ router.get("/:userId", async (req, res) => {
 //  Mark specific notification as read
 router.patch("/:id/read", async (req, res) => {
   try {
-    await Notification.findByIdAndUpdate(req.params.id, { read: true });
-    res.status(200).json({ success: true });
+    const result = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { read: true },
+      { new: true },
+    );
+
+    if (!result)
+      return res.status(404).json({ error: "Notification not found" });
+    res.status(200).json({ success: true, data: result });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
