@@ -41,10 +41,35 @@ export default function Workspace() {
       <h3 className="fw-bold mb-4">My Workspace</h3>
 
       <div className="row g-4 mb-5">
+        {/* Card 1: My Tickets */}
         <div className="col-md-3">
           <div className={styles.statCard} style={{ backgroundColor: 'var(--primary-color)' }}>
             <h2 className="fw-bold">{tickets.filter(t => t.assignedTo === "Hafsa").length}</h2>
             <p className="mb-0 small">My Tickets</p>
+          </div>
+        </div>
+
+        {/* Card 2: Open Tickets */}
+        <div className="col-md-3">
+          <div className={styles.statCard} style={{ backgroundColor: 'var(--open-status)' }}>
+            <h2 className="fw-bold">{tickets.filter(t => t.status === "Open").length}</h2>
+            <p className="mb-0 small">Open</p>
+          </div>
+        </div>
+
+        {/* Card 3: In Progress */}
+        <div className="col-md-3">
+          <div className={styles.statCard} style={{ backgroundColor: 'var(--in-progress-status)' }}>
+            <h2 className="fw-bold">{tickets.filter(t => t.status === "In Progress").length}</h2>
+            <p className="mb-0 small">In Progress</p>
+          </div>
+        </div>
+
+        {/* Card 4: High Priority (Need Response) */}
+        <div className="col-md-3">
+          <div className={styles.statCard} style={{ backgroundColor: 'var(--urgent-error-status)' }}>
+            <h2 className="fw-bold">{tickets.filter(t => t.priority === "High" && t.status !== "Closed").length}</h2>
+            <p className="mb-0 small">Need Response</p>
           </div>
         </div>
       </div>
