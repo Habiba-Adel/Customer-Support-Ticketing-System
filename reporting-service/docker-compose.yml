@@ -7,15 +7,54 @@ services:
       - "3000:3000"
     environment:
       - MONGO_URI=mongodb://mongo:27017/ticketing_db
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
-      - mongo
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   mongo:
     image: mongo:latest
     ports:
       - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+# services:
+#   reporting-service:
+#     build: .
+#     ports:
+#       - "3000:3000"
+#     environment:
+#       - RABBITMQ_URL=amqp://rabbitmq:5672
+#       - MONGO_URI=mongodb://mongo:27017/ticketing_db
+#     depends_on:
+#       - mongo
+#       - rabbitmq
+
+#   mongo:
+#     image: mongo:latest
+#     ports:
+#       - "27017:27017"
+#     volumes:
+#       - mongo-data:/data/db
+  
+#   rabbitmq:
+#     image: rabbitmq:3-management
+#     ports:
+#       - "5672:5672"   # Communication port
+#       - "15672:15672" # Management Dashboard port (Dashboard to see your queues)
 
 volumes:
   mongo-data:
