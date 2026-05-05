@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-config
+data:
+  PORT: "4000"
+  MONGODB_URI: "mongodb://mongodb:27017/user_db"
+  NODE_ENV: "production"

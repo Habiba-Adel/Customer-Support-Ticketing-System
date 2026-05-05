@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 
 async function start() {
   try {
-    await connectDB(process.env.MONGODB_URI);
+    await connectDB();
     await connectRabbitMQ();
 
     // Start the RabbitMQ worker

@@ -38,3 +38,6 @@ k8s/**/*secret*.yaml
 dist/
 build/
 EOF
+
+
+.history

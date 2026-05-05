@@ -1,40 +1,55 @@
-<<<<<<< HEAD
-//const dotenv = require('dotenv');
-//dotenv.config()
 const express = require("express");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const supportRoutes = require('./routes/support.routes');
+const supportRoutes = require("./routes/support.routes");
 
-
-const app = express()
-const PORT =process.env.PORT || 3002
+const app = express();
 app.use(express.json());
 
-const mongoURI = process.env.MONGODB_URI;
+const PORT = process.env.PORT || 3002;
+const MONGO_URI = process.env.MONGODB_URI;
 
-mongoose.connect(mongoURI)
-    .then(() => console.log("Connected to MongoDB Atlas successfully!"))
-    .catch((err) => console.error("Could not connect to MongoDB:", err));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-app.use('/api/support', supportRoutes);
+async function connectWithRetry(retries = 10, delay = 3000) {
+  while (retries > 0) {
+    try {
+      await mongoose.connect(MONGO_URI, {
+        serverSelectionTimeoutMS: 5000,
+      });
 
-app.get("/test" , (req , res)=>{
-    res.send("hello")
-})
+      console.log("✅ Support Service connected to MongoDB");
+      return;
 
-app.listen(PORT , ()=>{
-    console.log(`SUPPORT Service running on port :${PORT}`);
-=======
-const express = require("express");
+    } catch (err) {
+      retries--;
 
-const app = express()
+      console.error(
+        `❌ MongoDB connection failed. Retries left: ${retries}`
+      );
 
-app.get("/hello" , (req , res)=>{
-    res.send("hello")
-})
+      if (retries === 0) {
+        console.error("💥 MongoDB unreachable. Exiting...");
+        process.exit(1);
+      }
 
-app.listen(3002 , ()=>{
-    console.log("Ticket Service running on port 3002");
->>>>>>> frontend
-})
+      await sleep(delay);
+    }
+  }
+}
+
+async function startServer() {
+  await connectWithRetry();
+
+  app.listen(PORT, () => {
+    console.log(`🚀 SUPPORT Service running on port: ${PORT}`);
+  });
+}
+
+startServer();
+
+app.use("/api/support", supportRoutes);
+
+app.get("/test", (req, res) => {
+  res.send("hello");
+});

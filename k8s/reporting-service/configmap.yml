@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: reporting-service-config
+data:
+  PORT: "3005"
+  MONGODB_URI: "mongodb://mongodb:27017/reporting_db"
+  NODE_ENV: "production"

@@ -2,7 +2,8 @@ const amqp = require("amqplib");
 const handleSupportEvents = require("../events/support.handler");
 
 async function startConsumer() {
-  const conn = await amqp.connect(process.env.RABBITMQ_URL);
+  const URL = `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_HOST}:5672`;
+  const conn = await amqp.connect(URL);
   const channel = await conn.createChannel();
 
   const exchange = "ticket_events_exchange";

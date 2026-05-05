@@ -4,8 +4,9 @@ let channel;
 const exchange = "ticket_events_exchange";
 
 const connectRabbitMQ = async () => {
+  const URL = `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_HOST}:5672`;
   const connection = await amqp.connect(
-    process.env.RABBITMQ_URL || "amqp://localhost:5672"
+   URL
   );
 
   channel = await connection.createChannel();
