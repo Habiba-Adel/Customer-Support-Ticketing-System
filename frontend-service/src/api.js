@@ -30,7 +30,7 @@ export const getTickets = () =>
 export const createTicket = (data) =>
   fetch(`${BASE}/api/tickets`, {
     method: "POST",
-    headers: headers(),
+    headers: headers(true),
     body: JSON.stringify(data),
   }).then((r) => r.json());
 
