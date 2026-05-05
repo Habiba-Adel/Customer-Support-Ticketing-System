@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from './Auth.module.css';
 import { useNavigate } from 'react-router-dom';
+import { loginUser , registerUser } from '../api';
 
 
 export default function Auth({onLogin}) {
