@@ -22,7 +22,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -51,12 +51,14 @@ services:
     environment:
       PORT: 3003
       MONGODB_URI: mongodb://mongodb:27017/ticket_db
-      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin}@rabbitmq:5672
+      RABBITMQ_URL: amqp://habiba:habiba123@rabbitmq:5672
       JWT_SECRET: ${JWT_SECRET:-changeme}
       USER_SERVICE_URL: http://user-service:4000
     depends_on:
-      - mongodb
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
     networks:
       - app-network
 
@@ -67,13 +69,15 @@ services:
     environment:
       PORT: 3002
       MONGODB_URI: mongodb://mongodb:27017/support_db
-      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin}@rabbitmq:5672
+      RABBITMQ_URL: amqp://habiba:habiba123@rabbitmq:5672
       JWT_SECRET: ${JWT_SECRET:-changeme}
       TICKET_SERVICE_URL: http://ticket-service:3003
       USER_SERVICE_URL: http://user-service:4000
     depends_on:
-      - mongodb
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
     networks:
       - app-network
 
@@ -84,7 +88,7 @@ services:
     environment:
       PORT: 3001
       MONGODB_URI: mongodb://mongodb:27017/notification_db
-      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin}@rabbitmq:5672
+      RABBITMQ_URL: amqp://habiba:habiba123@rabbitmq:5672
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -99,8 +103,8 @@ services:
     restart: unless-stopped
     environment:
       PORT: 3005
-      MONGO_URI: mongodb://mongodb:27017/reporting_db
-      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin}@rabbitmq:5672
+      MONGODB_URI: mongodb://mongodb:27017/reporting_db
+      RABBITMQ_URL: amqp://habiba:habiba123@rabbitmq:5672
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -121,7 +125,6 @@ services:
       - reporting-service
     networks:
       - app-network
-
   # ─────────────────────────────────────────
   # MONITORING
   # ─────────────────────────────────────────
@@ -154,8 +157,8 @@ volumes:
   # we will have just one mongodb application and inside it each service will have its own db
   mongo-data:
   rabbitmq-data:
-  # prometheus-data:
-  # grafana-data:
+    # prometheus-data:
+    # grafana-data:
 
 networks:
   app-network:

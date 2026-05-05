@@ -11,6 +11,9 @@ spec:
     metadata:
       labels:
         app: support-service
+      annotations:                   
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3002"
     spec:
       containers:
         - name: support-service

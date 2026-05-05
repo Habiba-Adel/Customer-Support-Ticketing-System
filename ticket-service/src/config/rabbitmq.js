@@ -4,10 +4,18 @@ let channel;
 const exchange = "ticket_events_exchange";
 
 const connectRabbitMQ = async () => {
-  const URL = `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_HOST}:5672`;
-  const connection = await amqp.connect(
-   URL
-  );
+
+  let URL = process.env.RABBITMQ_URL;
+
+  if (!URL) {
+    // Fallback: build from individual environment variables
+    const user = process.env.RABBITMQ_USER;
+    const pass = process.env.RABBITMQ_PASS;
+    const host = process.env.RABBITMQ_HOST || "rabbitmq";
+    URL = `amqp://${user}:${pass}@${host}:5672`;
+  }
+  
+  const connection = await amqp.connect(URL);
 
   channel = await connection.createChannel();
 

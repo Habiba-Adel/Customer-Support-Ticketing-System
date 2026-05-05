@@ -2,7 +2,13 @@ const amqp = require("amqplib");
 const handleSupportEvents = require("../events/support.handler");
 
 async function startConsumer() {
-  const URL = `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASS}@${process.env.RABBITMQ_HOST}:5672`;
+  let URL = process.env.RABBITMQ_URL;
+  if (!URL) {
+    const user = process.env.RABBITMQ_USER;
+    const pass = process.env.RABBITMQ_PASS;
+    const host = process.env.RABBITMQ_HOST || "rabbitmq";
+    URL = `amqp://${user}:${pass}@${host}:5672`;
+  }
   const conn = await amqp.connect(URL);
   const channel = await conn.createChannel();
 
