@@ -1,9 +1,38 @@
 import styles from './workspace/Workspace.module.css';
+import { addResponse, resolveTicket } from "../../api";
+import React, { useEffect, useState } from 'react';
 
-export default function TicketModal({ ticket, onClose }) {
+export default function TicketModal({ ticket, onClose, onRefresh }) {
+  const [response, setResponse] = useState('');
   if (!ticket) return null;
 
   const isReadOnly = ticket.isReadOnly || ticket.status === "Closed";
+
+  // useEffect(() => {
+  //   const fetchHistory = async () => {
+  //     try {
+  //       const data = await getSupportTicket(ticket._id || ticket.id);
+  //       
+  //       setHistory(data.interactions || []);
+  //     } catch (err) {
+  //       console.error("Could not load history", err);
+  //     }
+  //   };
+
+  //   if (ticket) fetchHistory();
+  // }, [ticket]);
+
+  const handleSendResponse = async () => {
+    if (!response.trim()) return;
+    try {
+      await addResponse(ticket._id || ticket.id, 'Hend (Agent)', response);
+      setResponse('');
+      // Refresh the workspace data
+      onRefresh();
+    } catch (err) {
+      alert("Failed to send message");
+    }
+  };
 
   const getPriorityStyle = (priority) => {
     switch (priority) {
@@ -13,6 +42,7 @@ export default function TicketModal({ ticket, onClose }) {
       default: return {};
     }
   };
+
 
   return (
     <div className={styles.modalOverlay}>
@@ -47,7 +77,7 @@ export default function TicketModal({ ticket, onClose }) {
           </div>
         </div>
 
-        <h6 className="fw-bold mb-3">Interaction History</h6>
+        {/* <h6 className="fw-bold mb-3">Interaction History</h6>
         <div className="mb-4" style={{ maxHeight: '300px', overflowY: 'auto' }}>
           <div className={styles.chatBubble}>
             <small className="fw-bold d-block">{ticket.customer}</small>
@@ -57,6 +87,14 @@ export default function TicketModal({ ticket, onClose }) {
             <small className="fw-bold d-block">Hend (Agent)</small>
             <p className="mb-0 small text-dark">Looking into this for you right now!</p>
           </div>
+        </div> */}
+
+        {/* Keeping UI good while history API is uncertain */}
+        <h6 className="fw-bold mb-3">Description</h6>
+        <div className="mb-4 p-3 border rounded bg-white">
+          <p className="mb-0 small text-dark">
+            {ticket.description || "No detailed description provided."}
+          </p>
         </div>
 
         {!isReadOnly ? (
@@ -65,8 +103,15 @@ export default function TicketModal({ ticket, onClose }) {
               type="text"
               className="form-control"
               placeholder="Type your response..."
+              value={response}
+              onChange={(e) => setResponse(e.target.value)} // Update state on change
             />
-            <button className="btn btn-dark px-4" onClick={onClose}>Send</button>
+            <button
+              className="btn btn-dark px-4"
+              onClick={handleSendResponse} // Trigger API call
+            >
+              Send
+            </button>
           </div>
         ) : (
           <div className="pt-3 border-top text-center">
