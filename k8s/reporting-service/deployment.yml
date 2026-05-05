@@ -11,6 +11,9 @@ spec:
     metadata:
       labels:
         app: reporting-service
+      annotations:                   
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3005"
     spec:
       containers:
         - name: reporting-service

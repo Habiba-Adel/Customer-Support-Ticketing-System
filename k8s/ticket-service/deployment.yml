@@ -11,6 +11,9 @@ spec:
     metadata:
       labels:
         app: ticket-service
+      annotations:                   
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3003"
     spec:
       containers:
         - name: ticket-service
