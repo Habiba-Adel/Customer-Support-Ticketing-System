@@ -1,20 +1,28 @@
-import { useState } from 'react';
-import styles from './CreateTicketModal.module.css';
+import { useState } from "react";
+import styles from "./CreateTicketModal.module.css";
+import { createTicket } from "../../api";
 
 const CreateTicketModal = ({ show, onClose, onCreate }) => {
   const [formData, setFormData] = useState({
-    title: '',
-    category: '',
-    priority: '',
-    description: ''
+    title: "",
+    category: "",
+    priority: "",
+    description: "",
   });
 
   if (!show) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onCreate(formData); 
-    onClose(); 
+    try {
+      const response = await createTicket(formData);
+      console.log("Ticket created:", response);
+      onCreate(response);
+      onClose();
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      alert("Failed to create ticket");
+    }
   };
 
   return (
@@ -28,22 +36,25 @@ const CreateTicketModal = ({ show, onClose, onCreate }) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className={styles.formLabel}>Title</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               className={`form-control ${styles.customInput}`}
               placeholder="Enter ticket title"
               required
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
             />
           </div>
 
           <div className="row mb-3">
-            
             <div className="col">
               <label className={styles.formLabel}>Priority</label>
-              <select 
+              <select
                 className={`form-select ${styles.customInput}`}
-                onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                onChange={(e) =>
+                  setFormData({ ...formData, priority: e.target.value })
+                }
               >
                 <option value="">Select priority</option>
                 <option value="high">High</option>
@@ -55,26 +66,28 @@ const CreateTicketModal = ({ show, onClose, onCreate }) => {
 
           <div className="mb-4">
             <label className={styles.formLabel}>Description</label>
-            <textarea 
-              className={`form-control ${styles.customInput}`} 
+            <textarea
+              className={`form-control ${styles.customInput}`}
               rows="4"
               placeholder="Detailed description of the issue"
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
             ></textarea>
           </div>
 
           <div className="d-flex gap-3 mt-4">
-            <button 
-              type="button" 
-              className="btn btn-light flex-grow-1 py-2 fw-semibold" 
+            <button
+              type="button"
+              className="btn btn-light flex-grow-1 py-2 fw-semibold"
               onClick={onClose}
             >
               Cancel
             </button>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn btn-primary flex-grow-1 py-2 fw-semibold"
-              style={{ backgroundColor: '#0052cc' }}
+              style={{ backgroundColor: "#0052cc" }}
             >
               Create Ticket
             </button>
