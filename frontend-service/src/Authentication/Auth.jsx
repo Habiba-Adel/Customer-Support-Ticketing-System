@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-import { useState, useEffect } from "react";
-import styles from "./Auth.module.css";
-import { useNavigate } from "react-router-dom";
-import { loginUser, registerUser } from "../api";
-
-=======
 import { useState, useEffect } from 'react';
 import styles from './Auth.module.css';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, registerUser } from '../api';
 
 
->>>>>>> 0b27617 (fixing passing tokens in the get tikects)
 export default function Auth({ onLogin }) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
@@ -24,10 +16,6 @@ export default function Auth({ onLogin }) {
     password: "",
   });
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 0b27617 (fixing passing tokens in the get tikects)
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
