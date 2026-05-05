@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import styles from './Auth.module.css';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, registerUser } from '../../api';
-
+// import { loginUser, registerUser } from '../../api';
+import { loginUser , registerUser } from '../api';
 export default function Auth({ onLogin }) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);

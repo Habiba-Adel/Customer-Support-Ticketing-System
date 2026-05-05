@@ -47,7 +47,7 @@ const CreateTicketModal = ({ show, onClose, onCreate }) => {
             />
           </div>
 
-          <div className="row mb-3">
+          {/* <div className="row mb-3">
             <div className="col">
               <label className={styles.formLabel}>Priority</label>
               <select
@@ -62,7 +62,7 @@ const CreateTicketModal = ({ show, onClose, onCreate }) => {
                 <option value="low">Low</option>
               </select>
             </div>
-          </div>
+          </div> */}
 
           <div className="mb-4">
             <label className={styles.formLabel}>Description</label>
