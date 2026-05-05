@@ -67,9 +67,21 @@ export default function Workspace() {
 
 
   const filteredTickets = tickets.filter(t => {
-    if (activeTab === 'unassigned') return !t.assignedTo;
-    if (activeTab === 'my-active') return t.assignedTo === currentUser.id && t.status !== "Closed";
-    if (activeTab === 'closed') return t.status === "Closed";
+    // Unassigned: Only tickets with NO assignedTo field
+    if (activeTab === 'unassigned') {
+      return !t.assignedTo;
+    }
+
+    // My Active: Only tickets assigned to ME that are NOT closed
+    if (activeTab === 'my-active') {
+      return t.assignedTo === currentUser.id && t.status !== "Closed";
+    }
+
+    // Resolved: Only tickets with status "Closed"
+    if (activeTab === 'closed') {
+      return t.status === "Closed";
+    }
+
     return true;
   });
 
@@ -93,108 +105,113 @@ export default function Workspace() {
       <div className="row g-4 mb-5">
         <div className="col-md-3">
           <div className={styles.statCard} style={{ backgroundColor: 'var(--primary-color)' }}>
-            <h2 className="fw-bold">{tickets.filter(t => t.assignedTo === currentUser.id).length}</h2>
-            <p className="mb-0 small">My Tickets</p>
-          </div>
-        </div>
-        <div className="col-md-3">
-          <div className={styles.statCard} style={{ backgroundColor: 'var(--open-status)' }}>
-            <h2 className="fw-bold">{tickets.filter(t => t.status === "Open").length}</h2>
-            <p className="mb-0 small">Open</p>
-          </div>
-        </div>
-        <div className="col-md-3">
-          <div className={styles.statCard} style={{ backgroundColor: 'var(--in-progress-status)' }}>
-            <h2 className="fw-bold">{tickets.filter(t => t.status === "In Progress").length}</h2>
-            <p className="mb-0 small">In Progress</p>
-          </div>
-        </div>
-        <div className="col-md-3">
-          <div className={styles.statCard} style={{ backgroundColor: 'var(--urgent-error-status)' }}>
-            <h2 className="fw-bold">{tickets.filter(t => t.priority === "High" && t.status !== "Closed").length}</h2>
-            <p className="mb-0 small">Need Response</p>
+            <h2 className="fw-bold">
+              {tickets.filter(t => t.assignedTo === currentUser.id && t.status !== "Closed").length}
+            </h2>
+            <p className="mb-0 small">My Active Tickets</p>
           </div>
         </div>
       </div>
-
-      {/* Tab Navigation */}
-      <div className="d-flex align-items-center mb-4 gap-2">
-        <button className={`${styles.tabBtn} ${activeTab === 'unassigned' ? styles.activeTab : ''}`} onClick={() => setActiveTab('unassigned')}>
-          Unassigned ({tickets.filter(t => !t.assignedTo).length})
-        </button>
-        <button className={`${styles.tabBtn} ${activeTab === 'my-active' ? styles.activeTab : ''}`} onClick={() => setActiveTab('my-active')}>
-          My Active Tickets
-        </button>
-        <button className={`${styles.tabBtn} ${activeTab === 'closed' ? styles.activeTab : ''}`} onClick={() => setActiveTab('closed')}>
-          Resolved
-        </button>
+      <div className="col-md-3">
+        <div className={styles.statCard} style={{ backgroundColor: 'var(--open-status)' }}>
+          <h2 className="fw-bold">{tickets.filter(t => t.status === "Open").length}</h2>
+          <p className="mb-0 small">Open</p>
+        </div>
       </div>
-
-      {/* Table */}
-      <div className="bg-white rounded shadow-sm overflow-hidden">
-        <table className="table align-middle mb-0">
-          <thead className={styles.tableHeader}>
-            <tr>
-              <th className="ps-4 py-3">Ticket</th>
-              <th>Customer</th>
-              <th>Status</th>
-              <th>Priority</th>
-              <th className="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTickets.length > 0 ? filteredTickets.map((t) => (
-              <tr key={t._id || t.id}>
-                <td className="ps-4 py-4">
-                  <div className="fw-bold">#{t.id || t._id?.slice(-4)}</div>
-                  <div className="small text-muted">{t.title}</div>
-                </td>
-                <td>{t.customerName || t.customer || 'Guest'}</td>
-                <td>
-                  <span className="badge rounded-pill px-3 py-2" style={{ backgroundColor: t.status === 'Closed' ? 'var(--closed-status)' : 'var(--in-progress-status)' }}>
-                    {t.status}
-                  </span>
-                </td>
-                <td>
-                  <span className="badge px-3 py-2" style={{ backgroundColor: getPriorityColor(t.priority), borderRadius: '20px', minWidth: '80px' }}>
-                    {t.priority || 'Low'}
-                  </span>
-                </td>
-                <td className="text-center">
-                  <div className="d-flex justify-content-center">
-                    {activeTab === 'closed' ? (
-                      <button className="btn btn-sm btn-light border px-4" onClick={() => setSelectedTicket({ ...t, isReadOnly: true })}>View</button>
-                    ) : activeTab === 'unassigned' ? (
-                      <button
-                        className="btn btn-sm btn-primary px-3"
-                        style={{ backgroundColor: 'var(--primary-color)', border: 'none' }}
-                        onClick={() => handleAssignToMe(t._id || t.id)}
-                      >
-                        Assign to me
-                      </button>
-                    ) : (
-                      <button className={styles.resolveBtn} onClick={() => setSelectedTicket(t)}>Resolve</button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            )) : (
-              <tr>
-                <td colSpan="5" className="text-center py-4 text-muted">No tickets found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="col-md-3">
+        <div className={styles.statCard} style={{ backgroundColor: 'var(--in-progress-status)' }}>
+          <h2 className="fw-bold">{tickets.filter(t => t.status === "In Progress").length}</h2>
+          <p className="mb-0 small">In Progress</p>
+        </div>
       </div>
-
-      {selectedTicket && (
-        <TicketModal
-          ticket={selectedTicket}
-          onClose={() => setSelectedTicket(null)}
-          onRefresh={fetchData}
-          onResolve={() => handleResolve(selectedTicket._id || selectedTicket.id)}
-        />
-      )}
+      <div className="col-md-3">
+        <div className={styles.statCard} style={{ backgroundColor: 'var(--urgent-error-status)' }}>
+          <h2 className="fw-bold">{tickets.filter(t => t.priority === "High" && t.status !== "Closed").length}</h2>
+          <p className="mb-0 small">Need Response</p>
+        </div>
+      </div>
     </div>
+
+      {/* Tab Navigation */ }
+  <div className="d-flex align-items-center mb-4 gap-2">
+    <button className={`${styles.tabBtn} ${activeTab === 'unassigned' ? styles.activeTab : ''}`} onClick={() => setActiveTab('unassigned')}>
+      Unassigned ({tickets.filter(t => !t.assignedTo).length})
+    </button>
+    <button className={`${styles.tabBtn} ${activeTab === 'my-active' ? styles.activeTab : ''}`} onClick={() => setActiveTab('my-active')}>
+      My Active Tickets
+    </button>
+    <button className={`${styles.tabBtn} ${activeTab === 'closed' ? styles.activeTab : ''}`} onClick={() => setActiveTab('closed')}>
+      Resolved
+    </button>
+  </div>
+
+  {/* Table */ }
+  <div className="bg-white rounded shadow-sm overflow-hidden">
+    <table className="table align-middle mb-0">
+      <thead className={styles.tableHeader}>
+        <tr>
+          <th className="ps-4 py-3">Ticket</th>
+          <th>Customer</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th className="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredTickets.length > 0 ? filteredTickets.map((t) => (
+          <tr key={t._id || t.id}>
+            <td className="ps-4 py-4">
+              <div className="fw-bold">#{t.id || t._id?.slice(-4)}</div>
+              <div className="small text-muted">{t.title}</div>
+            </td>
+            <td>{t.customerName || t.customer || 'Guest'}</td>
+            <td>
+              <span className="badge rounded-pill px-3 py-2" style={{ backgroundColor: t.status === 'Closed' ? 'var(--closed-status)' : 'var(--in-progress-status)' }}>
+                {t.status}
+              </span>
+            </td>
+            <td>
+              <span className="badge px-3 py-2" style={{ backgroundColor: getPriorityColor(t.priority), borderRadius: '20px', minWidth: '80px' }}>
+                {t.priority || 'Low'}
+              </span>
+            </td>
+            <td className="text-center">
+              <div className="d-flex justify-content-center">
+                {activeTab === 'closed' ? (
+                  <button className="btn btn-sm btn-light border px-4" onClick={() => setSelectedTicket({ ...t, isReadOnly: true })}>View</button>
+                ) : activeTab === 'unassigned' ? (
+                  <button
+                    className="btn btn-sm btn-primary px-3"
+                    style={{ backgroundColor: 'var(--primary-color)', border: 'none' }}
+                    onClick={() => handleAssignToMe(t._id || t.id)}
+                  >
+                    Assign to me
+                  </button>
+                ) : (
+                  <button className={styles.resolveBtn} onClick={() => setSelectedTicket(t)}>Resolve</button>
+                )}
+              </div>
+            </td>
+          </tr>
+        )) : (
+          <tr>
+            <td colSpan="5" className="text-center py-4 text-muted">No tickets found.</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+
+  {
+    selectedTicket && (
+      <TicketModal
+        ticket={selectedTicket}
+        onClose={() => setSelectedTicket(null)}
+        onRefresh={fetchData}
+        onResolve={() => handleResolve(selectedTicket._id || selectedTicket.id)}
+      />
+    )
+  }
+    </div >
   );
 }
