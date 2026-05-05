@@ -27,6 +27,7 @@
   margin-bottom: 1rem;
   transition: transform 0.2s;
   background-color: white; /* Default for read */
+  cursor: pointer;
 }
 
 /* The light blue background for unread items */

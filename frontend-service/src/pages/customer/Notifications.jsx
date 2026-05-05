@@ -1,11 +1,22 @@
 import { useState, useEffect } from "react";
 import styles from "./Notifications.module.css";
-import { getNotifications } from "../../api";
+import { getNotifications , markAsRead  } from "../../api";
 
-//TO DO : CHANGE READ STATUS ON CLICK --IMPORTANT
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const handleNotificationClick = async (id) => {
+  try {
+    await markAsRead(id);
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n._id === id ? { ...n, read: true } : n
+      )
+    );
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+  }
+};
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -59,6 +70,7 @@ const Notifications = () => {
           notifications.map((note) => (
             <div
               key={note._id || note.id}
+              onClick={() => handleNotificationClick(note._id)}
               className={`${styles.notificationItem} ${!note.read ? styles.unreadItem : ""}`}
             >
               <div className={styles.iconContainer}>
