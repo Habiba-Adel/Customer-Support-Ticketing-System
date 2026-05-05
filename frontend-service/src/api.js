@@ -25,7 +25,7 @@ export const loginUser = (data) =>
 
 // ── TICKET SERVICE ────────────────────────────────────────────
 export const getTickets = () =>
-  fetch(`${BASE}/api/tickets`, { headers: headers() }).then((r) => r.json());
+  fetch(`${BASE}/api/tickets`, { headers: headers(true) }).then((r) => r.json());
 
 export const createTicket = (data) =>
   fetch(`${BASE}/api/tickets`, {

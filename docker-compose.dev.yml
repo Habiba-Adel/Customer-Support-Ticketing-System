@@ -10,16 +10,16 @@ services:
 
   mongodb:
     ports:
-      - "27017:27017"   # expose so you can connect with MongoDB Compass
+      - "27017:27017" # expose so you can connect with MongoDB Compass
 
   rabbitmq:
     ports:
-      - "5672:5672"     # AMQP port
-      - "15672:15672"   # management UI → http://localhost:15672
+      - "5672:5672" # AMQP port
+      - "15672:15672" # management UI → http://localhost:15672
 
   user-service:
     volumes:
-      - ./user-service/src:/app/src       # hot reload
+      - ./user-service/src:/app/src # hot reload
     environment:
       NODE_ENV: development
     ports:
@@ -56,11 +56,10 @@ services:
       NODE_ENV: development
     ports:
       - "3005:3005"
-  
+
   frontend:
     ports:
-      - "8080:80"    # access the app at http://localhost:8080
-
+      - "8080:80" # access the app at http://localhost:8080
   # prometheus:
   #   ports:
   #     - "9090:9090"     # Prometheus UI → http://localhost:9090
