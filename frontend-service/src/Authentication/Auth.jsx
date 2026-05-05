@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import styles from './Auth.module.css';
 import { useNavigate } from 'react-router-dom';
+import { loginUser, registerUser } from '../../api';
 
-export default function Auth({onLogin}) {
+export default function Auth({ onLogin }) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [role, setRole] = useState('customer');
@@ -14,25 +15,56 @@ export default function Auth({onLogin}) {
     password: ''
   });
 
-  
+
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Auth.jsx
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   onLogin({
+  //     name: formData.fullName || "User",
+  //     role: role,
+  //     notifications: 0
+  //   });
+
+  //   if (role === 'agent') {
+  //     navigate('/agent/workspace');
+  //   } else {
+  //     navigate('/customer/tickets');
+  //   }
+  // };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      let result;
+      if (isLogin) {
+        result = await loginUser({ email: formData.email, password: formData.password });
+      } else {
+        result = await registerUser({ name: formData.fullName, email: formData.email, password: formData.password, role });
+        // after register, auto-login
+        result = await loginUser({ email: formData.email, password: formData.password });
+      }
 
-    onLogin({
-      name: formData.fullName || "User",
-      role: role,
-      notifications: 0
-    });
-
-    if (role === 'agent') {
-      navigate('/agent/workspace');
-    } else {
-      navigate('/customer/tickets');
+      if (result.token) {
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('user', JSON.stringify(result.user));
+        onLogin({
+          id: result.user._id,
+          name: result.user.name,
+          role: result.user.role,
+          notifications: 0
+        });
+        navigate(result.user.role === 'agent' ? '/agent/workspace' : '/customer/tickets');
+      } else {
+        alert(result.message || 'Login failed');
+      }
+    } catch (err) {
+      alert('Something went wrong');
     }
   };
 
