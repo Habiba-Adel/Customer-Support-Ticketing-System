@@ -14,7 +14,8 @@ export default function StatRow({ label, count, total, color }) {
               width: `${percentage}%`,
               backgroundColor: color,
               height: '100%',
-              borderRadius: '10px'
+              borderRadius: '10px',
+              transition: 'width 0.8s ease-in-out'
             }}
           ></div>
         </div>

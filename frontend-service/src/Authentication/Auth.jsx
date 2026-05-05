@@ -1,24 +1,85 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Auth.module.css';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, registerUser } from '../../api';
+import { loginUser, registerUser } from '../api';
 
 export default function Auth({ onLogin }) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [role, setRole] = useState('customer');
+  const [loading, setLoading] = useState(false);
 
-  // Logical addition: Track input values
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: ''
   });
 
-
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      let result;
+
+      if (isLogin) {
+        // ── LOGIN ──
+        result = await loginUser({
+          email: formData.email,
+          password: formData.password
+        });
+      } else {
+        // ── REGISTER ──
+        const registerResult = await registerUser({
+          name: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          role
+        });
+
+        if (registerResult.error || !registerResult.success) {
+          throw new Error(registerResult.message || "Registration failed");
+        }
+
+        // Auto-login after successful registration
+        result = await loginUser({
+          email: formData.email,
+          password: formData.password
+        });
+      }
+
+      // ── SESSION MANAGEMENT ──
+      if (result && result.token) {
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('user', JSON.stringify(result.user));
+
+        // Update App state
+        onLogin({
+          id: result.user._id,
+          name: result.user.name,
+          role: result.user.role,
+          notifications: 0
+        });
+
+        // Role-based redirection
+        if (result.user.role === 'agent') {
+          navigate('/agent/workspace');
+        } else {
+          navigate('/customer/tickets');
+        }
+      } else {
+        alert(result.message || 'Authentication failed');
+      }
+    } catch (err) {
+      console.error("Auth Error:", err);
+      alert(err.message || 'Something went wrong. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Auth.jsx
@@ -77,6 +138,7 @@ export default function Auth({ onLogin }) {
         </p>
 
         <form onSubmit={handleSubmit}>
+          {/* Role Selection */}
           <div className={styles.inputGroup}>
             <label>I am a...</label>
             <div className={styles.segmentedControl}>
@@ -97,15 +159,16 @@ export default function Auth({ onLogin }) {
             </div>
           </div>
 
-          {/* This is the Register-specific logic */}
           {!isLogin && (
             <div className={styles.inputGroup}>
               <label>Full Name</label>
               <input
                 type="text"
                 name="fullName"
+                required
                 className={styles.inputField}
                 placeholder="Hafsa Hikal"
+                value={formData.fullName}
                 onChange={handleChange}
               />
             </div>
@@ -116,8 +179,10 @@ export default function Auth({ onLogin }) {
             <input
               type="email"
               name="email"
+              required
               className={styles.inputField}
               placeholder="name@example.com"
+              value={formData.email}
               onChange={handleChange}
             />
           </div>
@@ -127,14 +192,20 @@ export default function Auth({ onLogin }) {
             <input
               type="password"
               name="password"
+              required
               className={styles.inputField}
               placeholder="••••••••"
+              value={formData.password}
               onChange={handleChange}
             />
           </div>
 
-          <button className={styles.primaryBtn} type="submit">
-            {isLogin ? 'Login' : 'Register'}
+          <button
+            className={styles.primaryBtn}
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
           </button>
         </form>
 
