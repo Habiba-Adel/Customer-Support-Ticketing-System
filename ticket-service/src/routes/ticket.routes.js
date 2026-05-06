@@ -6,6 +6,8 @@ router.post("/", auth(["customer"]), controller.createTicket);
 
 router.get("/", auth(["customer", "agent"]), controller.getTickets);
 
+router.get("/unassigned", auth(["agent"]), controller.getUnassignedTickets);
+
 router.get("/:id", auth(["customer", "agent"]), controller.getTicketById);
 
 module.exports = router;

@@ -1,4 +1,5 @@
-const Support = require('../models/support.model'); 
+const Support = require('../models/support.model');
+const { publishEvent } = require('../config/rabbitmq');
 
 exports.assignAgent = async (req, res) => {
     try {
@@ -8,7 +9,7 @@ exports.assignAgent = async (req, res) => {
 
         if (support) {
             support.agentId = agentId;
-            support.status="In Progress";
+            support.status = "In Progress";
         } else {
             support = new Support({
                 ticketId,
@@ -18,6 +19,13 @@ exports.assignAgent = async (req, res) => {
         }
 
         await support.save();
+
+        // Publish event to ticket-service
+        publishEvent({
+            event: "ticket_assigned",
+            ticketId,
+            data: { agentId }
+        });
 
         res.status(200).json({
             message: "Agent assigned successfully",
@@ -76,22 +84,21 @@ exports.getTicket = async (req, res) => {
 exports.resolveTicket = async (req, res) => {
     try {
         const { ticketId } = req.params;
-
         const support = await Support.findOne({ ticketId });
-
         if (!support) {
             return res.status(404).json({ message: "Ticket not found" });
         }
-
         support.status = "Resolved";
-
         await support.save();
 
-        res.status(200).json({
-            message: "Ticket resolved successfully",
-            data: support
+        // publish to ticket-service to update ticket_db
+        publishEvent({
+            event: "ticket_status_updated",
+            ticketId,
+            data: { status: "Resolved" }
         });
 
+        res.status(200).json({ message: "Ticket resolved successfully", data: support });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -100,22 +107,21 @@ exports.resolveTicket = async (req, res) => {
 exports.closeTicket = async (req, res) => {
     try {
         const { ticketId } = req.params;
-
         const support = await Support.findOne({ ticketId });
-
         if (!support) {
             return res.status(404).json({ message: "Ticket not found" });
         }
-
         support.status = "Closed";
-
         await support.save();
 
-        res.status(200).json({
-            message: "Ticket closed successfully",
-            data: support
+        // publish to ticket-service to update ticket_db
+        publishEvent({
+            event: "ticket_status_updated",
+            ticketId,
+            data: { status: "Closed" }
         });
 
+        res.status(200).json({ message: "Ticket closed successfully", data: support });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

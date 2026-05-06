@@ -19,27 +19,59 @@ export default function Reports() {
 
   // Get Data From Backend
   useEffect(() => {
-    const fetchReportData = async () => {
-      setLoading(true);
-      try {
-        // Fetch all reporting data in parallel
-        const [totalRes, statusRes, priorityRes, avgRes] = await Promise.all([
-          getTotalTickets(),
-          getStatusCounts(),
-          getPriorityCounts(),
-          getAvgResolution()
-        ]);
-        setTotal(totalRes.total || 0);
-        setStatusData(statusRes || {});
-        setPriorityData(priorityRes || {});
-        setAvgTime(avgRes.averageResolutionTime || "0 hours");
-      } catch (error) {
-        console.error("Failed to fetch report data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    // const fetchReportData = async () => {
+    //   setLoading(true);
+    //   try {
+    //     // Fetch all reporting data in parallel
+    //     const [totalRes, statusRes, priorityRes, avgRes] = await Promise.all([
+    //       getTotalTickets(),
+    //       getStatusCounts(),
+    //       getPriorityCounts(),
+    //       getAvgResolution()
+    //     ]);
+    //     setTotal(totalRes.total || 0);
+    //     setStatusData(statusRes || {});
+    //     setPriorityData(priorityRes || {});
+    //     setAvgTime(avgRes.averageResolutionTime || "0 hours");
+    //   } catch (error) {
+    //     console.error("Failed to fetch report data:", error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
 
+    const fetchReportData = async () => {
+  setLoading(true);
+  try {
+    const [totalRes, statusRes, priorityRes, avgRes] = await Promise.all([
+      getTotalTickets(),
+      getStatusCounts(),
+      getPriorityCounts(),
+      getAvgResolution()
+    ]);
+
+    // fix 1: correct field name
+    setTotal(totalRes.totalTickets || 0);
+
+    // fix 2: convert array to object so statusData.Open works
+    const statusMap = {};
+    statusRes.forEach(item => { statusMap[item._id] = item.count; });
+    setStatusData(statusMap);
+
+    // fix 3: convert array to object so priorityData.High works
+    const priorityMap = {};
+    priorityRes.forEach(item => { priorityMap[item._id] = item.count; });
+    setPriorityData(priorityMap);
+
+    // fix 4: correct field name
+    setAvgTime(avgRes.averageTimeHours ? `${avgRes.averageTimeHours.toFixed(1)} hours` : "0 hours");
+
+  } catch (error) {
+    console.error("Failed to fetch report data:", error);
+  } finally {
+    setLoading(false);
+  }
+};
     fetchReportData();
   }, []);
 

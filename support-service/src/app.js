@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const client = require('prom-client');
-
+const { connectRabbitMQ } = require('./config/rabbitmq'); 
 const supportRoutes = require("./routes/support.routes");
 
 const app = express();
@@ -58,6 +58,7 @@ async function connectWithRetry(retries = 10, delay = 3000) {
 
 async function startServer() {
   await connectWithRetry();
+  await connectRabbitMQ();
 
   app.listen(PORT, () => {
     console.log(`🚀 SUPPORT Service running on port: ${PORT}`);

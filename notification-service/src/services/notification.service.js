@@ -5,13 +5,18 @@ async function handleNotification(payload) {
 
   console.log(`🔔 Processing ${eventType} for Ticket: ${ticketId}`);
 
-  const messages = {
-    ticket_created: (d) =>
-      `New [${d.priority || "medium"}] ticket: "${d.title}" is now Open.`,
-    status_updated: (d) =>
-      `Ticket #${d.ticketId} status changed to: ${d.newStatus}.`,
-    ticket_resolved: (d) => `Success! Ticket #${d.ticketId} has been Resolved.`,
-  };
+const messages = {
+  ticket_created: (d) =>
+    `New [${d.priority || "medium"}] ticket: "${d.title}" is now Open.`,
+  ticket_status_updated: (d) =>
+    `Ticket status changed to: ${d.status}.`,
+  ticket_assigned: (d) =>
+    `Your ticket has been assigned to an agent.`,
+  status_updated: (d) =>
+    `Ticket status changed to: ${d.newStatus}.`,
+  ticket_resolved: (d) =>
+    `Your ticket has been Resolved.`,
+};
 
   const messageGenerator = messages[eventType];
   if (!messageGenerator) {

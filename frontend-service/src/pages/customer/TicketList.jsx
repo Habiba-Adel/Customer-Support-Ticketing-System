@@ -9,18 +9,41 @@ const TicketList = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        // setLoading(true);
+    // const fetchTickets = async () => {
+    //   try {
+    //     // setLoading(true);
 
-        const data = await getTickets();
-        setTickets(data);
-      } catch (error) {
-        console.error("Error fetching tickets:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    //     const data = await getTickets();
+    //     setTickets(data);
+    //   } catch (error) {
+    //     console.error("Error fetching tickets:", error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+   
+    const fetchTickets = async () => {
+  try {
+    setLoading(true);
+    const data = await getTickets();
+    const formatted = data.map(t => ({
+      id: t._id,
+      title: t.title,
+      status: t.status,
+      date: t.createdAt 
+        ? new Date(t.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+        : 'N/A'
+    }));
+    setTickets(formatted);
+  } catch (error) {
+    console.error("Error fetching tickets:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+   
+   
+   
     fetchTickets();
   }, []);
 

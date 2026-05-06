@@ -22,9 +22,30 @@ exports.createTicket = async (req, res) => {
 
 // GET ALL
 exports.getTickets = async (req, res) => {
-  const tickets = await Ticket.find().sort({ createdAt: -1 });
+  let filter = {};
+  
+  if (req.user.role === 'customer') {
+    filter = { customerId: req.user.id };
+  } else if (req.user.role === 'agent') {
+    // Agents see tickets assigned to them
+    filter = { assignedAgentId: req.user.id };
+  }
+  // Admin (if any) sees all
+
+  const tickets = await Ticket.find(filter).sort({ createdAt: -1 });
   return res.json(tickets);
 };
+
+// GET unassigned tickets (only for agents)
+exports.getUnassignedTickets = async (req, res) => {
+  if (req.user.role !== 'agent') {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+  const tickets = await Ticket.find({ assignedAgentId: null }).sort({ createdAt: -1 });
+  return res.json(tickets);
+};
+
+
 
 // GET BY ID
 exports.getTicketById = async (req, res) => {
