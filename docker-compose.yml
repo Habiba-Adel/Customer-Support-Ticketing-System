@@ -15,8 +15,8 @@ services:
     container_name: rabbitmq
     restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-admin}
+      RABBITMQ_DEFAULT_USER: habiba
+      RABBITMQ_DEFAULT_PASS: habiba123
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
@@ -116,6 +116,8 @@ services:
   frontend:
     build: ./frontend-service
     container_name: frontend
+    ports:
+      - "80:80"
     restart: unless-stopped
     depends_on:
       - user-service

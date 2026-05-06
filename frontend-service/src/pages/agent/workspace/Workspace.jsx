@@ -38,7 +38,6 @@
 //     }
 //   };
 
-
 //   // Fetch Real Data
 //   useEffect(() => {
 //     fetchData();
@@ -86,7 +85,6 @@
 //     }
 //   };
 
-
 //   const handleUpdateTicket = (id, newPriority, newAssignee = null) => {
 //     setTickets(prev => prev.map(t =>
 //       t.id === id
@@ -94,7 +92,6 @@
 //         : t
 //     ));
 //   };
-
 
 //   const filteredTickets = tickets.filter(t => {
 //     if (activeTab === 'unassigned') return !t.assignedTo;
@@ -104,7 +101,6 @@
 //   });
 
 //   if (loading) return <div className="text-center p-5">Loading Workspace...</div>;
-
 
 //   const getPriorityColor = (priority) => {
 //     switch (priority) {
@@ -229,9 +225,7 @@
 //   );
 // }
 
-
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './Workspace.module.css';
 import TicketModal from '../TicketModal';
 import { getTickets, getUnassignedTickets, assignAgent, resolveTicket } from '../../../api';
@@ -244,36 +238,55 @@ export default function Workspace() {
   const [loading, setLoading] = useState(true);
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
 
-  // const [tickets, setTickets] = useState([
-  //   { id: 1, title: "Login page not loading on mobile browsers", customer: "Hafsa", status: "Closed", priority: "High", assignedTo: "Hafsa" },
-  //   { id: 5, title: "Email notifications delayed by 2 hours", customer: "Hafsa", status: "In Progress", priority: "High", assignedTo: "Hafsa" },
-  //   { id: 7, title: "Cannot reset password", customer: "Zeina", status: "Open", priority: "Medium", assignedTo: null }
-  // ]);
-
-  const fetchData = async () => {
+// 1. Add 'isRefresh' parameter to control when loading state is toggled
+const fetchData = useCallback(async (isRefresh = false) => {
+  // Only set loading to true if this is a manual refresh.
+  // On initial mount, 'loading' is already true, so we skip this to avoid the warning.
+  if (isRefresh) {
     setLoading(true);
-    try {
-      const data = await getTickets();
-      // Ensure we always have an array to prevent .map errors
-      setTickets(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Failed to fetch tickets:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  try {
+    const [unassignedData, myData] = await Promise.all([
+      getUnassignedTickets(),
+      getTickets()
+    ]);
+
+    setUnassignedTickets(Array.isArray(unassignedData) ? unassignedData : []);
+    setMyTickets(Array.isArray(myData) ? myData : []);
+  } catch (err) {
+    console.error("FETCH ERROR:", err);
+  } finally {
+    // This is asynchronous (happens after the await), so it's safe!
+    setLoading(false);
+  }
+}, []);
+
+// 2. Initial trigger (no arguments passed, so isRefresh is false)
+useEffect(() => {
+  fetchData();
+}, [fetchData]);
+
+// 3. Manual refresh trigger (passes true to show the loading state)
+const handleRefresh = () => {
+  fetchData(true);
+};
+
+  // 4. DISPLAY LOGIC (Defined before use)
+  const getDisplayTickets = () => {
+    if (activeTab === 'unassigned') return unassignedTickets;
+    if (activeTab === 'my-active') return myTickets.filter(t => t.status !== "Closed" && t.status !== "Resolved");
+    if (activeTab === 'closed') return myTickets.filter(t => t.status === "Closed" || t.status === "Resolved");
+    return [];
+  };
 
   const handleAssignToMe = async (ticketId) => {
     try {
-      await assignAgent(ticketId, currentUser._id);
-      await fetchData();
+      // Use _id because your MERN backend likely uses MongoDB
+      await assignAgent(ticketId, currentUser._id || currentUser.id);
+      await handleRefresh(); 
       setActiveTab('my-active');
     } catch (err) {
-      console.err(err.message)
       alert("Assignment failed!");
     }
   };
@@ -281,26 +294,16 @@ export default function Workspace() {
   const handleResolve = async (ticketId) => {
     try {
       await resolveTicket(ticketId);
-      await fetchData();
+      await handleRefresh();
       setSelectedTicket(null);
     } catch (err) {
-      console.err(err.message)
       alert("Could not resolve ticket.");
     }
   };
 
-
-  // const handleUpdateTicket = (id, newPriority, newAssignee = null) => {
-  //   setTickets(prev => prev.map(t =>
-  //     t.id === id
-  //       ? { ...t, priority: newPriority, assignedTo: newAssignee !== null ? newAssignee : t.assignedTo }
-  //       : t
-  //   ));
-  // };
-
   const displayTickets = getDisplayTickets();
 
-  // Stats use myTickets (tickets assigned to agent)
+  // Stats
   const myOpenTickets = myTickets.filter(t => t.status === "Open").length;
   const myInProgress = myTickets.filter(t => t.status === "In Progress").length;
   const myHighPriorityActive = myTickets.filter(t => t.priority === "High" && t.status !== "Closed").length;
@@ -354,10 +357,11 @@ export default function Workspace() {
           Unassigned ({unassignedTickets.length})
         </button>
         <button className={`${styles.tabBtn} ${activeTab === 'my-active' ? styles.activeTab : ''}`} onClick={() => setActiveTab('my-active')}>
-          My Active Tickets ({myTickets.filter(t => t.status !== "Closed" && t.status !== "Resolved").length})
+          My Active Tickets
         </button>
         <button className={`${styles.tabBtn} ${activeTab === 'closed' ? styles.activeTab : ''}`} onClick={() => setActiveTab('closed')}>
-          Resolved ({myTickets.filter(t => t.status === "Resolved" || t.status === "Closed").length})        </button>
+          Resolved
+        </button>
       </div>
 
       {/* Table */}
@@ -376,7 +380,7 @@ export default function Workspace() {
             {displayTickets.length > 0 ? displayTickets.map((t) => (
               <tr key={t._id}>
                 <td className="ps-4 py-4">
-                  <div className="fw-bold">#{t._id.slice(-4)}</div>
+                  <div className="fw-bold">#{t._id?.slice(-4) || 'N/A'}</div>
                   <div className="small text-muted">{t.title}</div>
                 </td>
                 <td>{t.customerName || t.customerId || 'Guest'}</td>
@@ -421,7 +425,7 @@ export default function Workspace() {
         <TicketModal
           ticket={selectedTicket}
           onClose={() => setSelectedTicket(null)}
-          onRefresh={fetchData}
+          onRefresh={handleRefresh}
           onResolve={() => handleResolve(selectedTicket._id)}
         />
       )}
