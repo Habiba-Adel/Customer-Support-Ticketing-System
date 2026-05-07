@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import styles from './Auth.module.css';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, registerUser, getUnreadCount } from '../api';
+import { loginUser, registerUser } from '../api';
+import toast from 'react-hot-toast';
 
 
 export default function Auth({ onLogin }) {
@@ -20,21 +21,26 @@ export default function Auth({ onLogin }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
+    // You can even use a promise toast for the whole process
+    const loginPromise = (async () => {
       let result;
 
       if (isLogin) {
-        // ── LOGIN ──
         result = await loginUser({
           email: formData.email,
           password: formData.password,
         });
+
+        // Handle the "Logged in as wrong role" case
+        if (result && result.user && result.user.role !== role) {
+          throw new Error(`Account registered as ${result.user.role}. Change selection.`);
+        }
       } else {
-        // ── REGISTER ──
         const registerResult = await registerUser({
           name: formData.fullName,
           email: formData.email,
@@ -42,80 +48,50 @@ export default function Auth({ onLogin }) {
           role,
         });
 
-        if (registerResult.error) {
-          throw new Error(registerResult.message || "Registration failed");
-        }
+        if (registerResult.error) throw new Error(registerResult.message);
 
-        // Auto-login after successful registration
         result = await loginUser({
           email: formData.email,
           password: formData.password,
         });
       }
 
-      // ── SESSION MANAGEMENT ──
-      // ── SESSION MANAGEMENT ──
-      if (result && result.token) {
-        localStorage.setItem("token", result.token);
+      if (!result || !result.token) {
+        throw new Error(result?.message || "Authentication failed");
+      }
 
-        // Fetch real unread count
-        let unreadCount = 0;
-        try {
-          const countData = await getUnreadCount(result.user._id);
-          unreadCount = countData.unreadCount || 0;
-        } catch (err) {
-          console.warn("Failed to fetch unread count", err);
-        }
+      // Success logic
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      onLogin({
+        id: result.user._id,
+        name: result.user.name,
+        role: result.user.role,
+      });
 
-        const userWithNotifications = {
-          ...result.user,
-          notifications: unreadCount,
-        };
-        localStorage.setItem("user", JSON.stringify(userWithNotifications));
+      return result.user;
+    })();
 
-        // Update App state with the correct count
-        onLogin({
-          id: userWithNotifications._id,
-          name: userWithNotifications.name,
-          role: userWithNotifications.role,
-          notifications: userWithNotifications.notifications,
-        });
+    toast.promise(loginPromise, {
+      loading: 'Authenticating...',
+      success: (user) => `Welcome back, ${user.name}!`,
+      error: (err) => `${err.message}`,
+    });
 
-        // Role-based redirection (unchanged)
-        if (result.user.role === "agent") {
-          navigate("/agent/workspace");
-        } else {
-          navigate("/customer/tickets");
-        }
+    try {
+      const user = await loginPromise;
+      // Redirection happens after toast starts
+      if (user.role === "agent") {
+        navigate("/agent/workspace");
       } else {
-        alert(result.message || "Authentication failed");
+        navigate("/customer/tickets");
       }
     } catch (err) {
-      console.error("Auth Error:", err);
-      alert(
-        err.message || "Something went wrong. Please check your connection.",
-      );
+      // Error is already handled by toast.promise
     } finally {
       setLoading(false);
     }
   };
-
-  // Auth.jsx
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   onLogin({
-  //     name: formData.fullName || "User",
-  //     role: role,
-  //     notifications: 0
-  //   });
-
-  //   if (role === 'agent') {
-  //     navigate('/agent/workspace');
-  //   } else {
-  //     navigate('/customer/tickets');
-  //   }
-  // };
 
   return (
     <div className={styles.authContainer}>
