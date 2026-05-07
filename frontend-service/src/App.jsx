@@ -8,6 +8,8 @@ import TicketList from "./pages/customer/TicketList";
 import CustomerLayout from "./layouts/CustomerLayout";
 import AgentLayout from "./layouts/AgentLayout";
 import { getUnreadCount } from "./api"; 
+import { Toaster } from 'react-hot-toast';
+
 
 // function App() {
 //   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -114,6 +116,8 @@ function App() {
   }
 
   return (
+    <>
+    <Toaster position="top-center" reverseOrder={false} />
     <Routes>
       <Route path="/auth" element={<Auth onLogin={handleLogin} />} />
 
@@ -146,6 +150,7 @@ function App() {
 
       <Route path="*" element={<Navigate to="/auth" />} />
     </Routes>
+      </>
   );
 }
 
