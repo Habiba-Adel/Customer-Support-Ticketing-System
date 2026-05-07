@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from './Auth.module.css';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, registerUser } from '../api';
+import { loginUser, registerUser, getUnreadCount } from '../api';
 
 
 export default function Auth({ onLogin }) {
@@ -54,19 +54,34 @@ export default function Auth({ onLogin }) {
       }
 
       // ── SESSION MANAGEMENT ──
+      // ── SESSION MANAGEMENT ──
       if (result && result.token) {
         localStorage.setItem("token", result.token);
-        localStorage.setItem("user", JSON.stringify(result.user));
 
-        // Update App state
+        // Fetch real unread count
+        let unreadCount = 0;
+        try {
+          const countData = await getUnreadCount(result.user._id);
+          unreadCount = countData.unreadCount || 0;
+        } catch (err) {
+          console.warn("Failed to fetch unread count", err);
+        }
+
+        const userWithNotifications = {
+          ...result.user,
+          notifications: unreadCount,
+        };
+        localStorage.setItem("user", JSON.stringify(userWithNotifications));
+
+        // Update App state with the correct count
         onLogin({
-          id: result.user._id,
-          name: result.user.name,
-          role: result.user.role,
-          notifications: 0,
+          id: userWithNotifications._id,
+          name: userWithNotifications.name,
+          role: userWithNotifications.role,
+          notifications: userWithNotifications.notifications,
         });
 
-        // Role-based redirection
+        // Role-based redirection (unchanged)
         if (result.user.role === "agent") {
           navigate("/agent/workspace");
         } else {

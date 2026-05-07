@@ -44,11 +44,11 @@ export const getUnassignedTickets = () =>
 
 
 // ── SUPPORT SERVICE ───────────────────────────────────────────
-export const assignAgent = (ticketId, agentId) =>
+export const assignAgent = (ticketId, agentId, customerId) =>
     fetch(`${BASE}/api/support/assign`, {
         method: "POST",
         headers: headers(true),  // added true
-        body: JSON.stringify({ ticketId, agentId }),
+        body: JSON.stringify({ticketId, agentId, customerId  }),
     }).then((r) => r.json());
 
 export const resolveTicket = (ticketId) =>
@@ -83,7 +83,7 @@ export const reopenTicket = (ticketId) =>
 
 // ── NOTIFICATION SERVICE ──────────────────────────────────────
 export const getNotifications = (userId) =>
-    fetch(`${BASE}/api/notifications/${userId}`, { headers: headers() }).then(
+    fetch(`${BASE}/api/notifications/${userId}`, { headers: headers(true) }).then(
         (r) => r.json(),
     );
 

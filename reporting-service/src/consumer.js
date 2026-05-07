@@ -7,12 +7,24 @@ async function startConsumer() {
         const connection = await amqp.connect(RABBITMQ_URL);
         const channel = await connection.createChannel();
 
-        const queue = 'ticket_events';
-        await channel.assertQueue(queue, { durable: true });
+        // const queue = 'ticket_events';
+        // await channel.assertQueue(queue, { durable: true });
 
-        console.log(`🚀 Reporting Service is waiting for messages in queue: ${queue}`);
+        // console.log(`🚀 Reporting Service is waiting for messages in queue: ${queue}`);
 
-        channel.consume(queue, async (msg) => {
+        // channel.consume(queue, async (msg) => {
+
+
+
+        const exchange = 'ticket_events_exchange';
+        await channel.assertExchange(exchange, 'fanout', { durable: true });
+        const q = await channel.assertQueue('', { exclusive: true });
+        await channel.bindQueue(q.queue, exchange, '');
+
+        console.log(`🚀 Reporting Service is waiting for messages on exchange: ${exchange}`);
+      
+      
+        channel.consume(q.queue, async (msg) => {
             if (msg !== null) {
                 try {
 
@@ -21,7 +33,7 @@ async function startConsumer() {
                     const parsedMsg = JSON.parse(msg.content.toString());
                     const { event, ticketId, data } = parsedMsg;
                     console.log("📊 Reporting Service received a new event:", event);
-                    
+
                     switch (event) {
                         case 'ticket_created':
                             await Ticket.create({

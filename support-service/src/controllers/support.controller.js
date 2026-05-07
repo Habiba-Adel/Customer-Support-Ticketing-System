@@ -3,17 +3,19 @@ const { publishEvent } = require('../config/rabbitmq');
 
 exports.assignAgent = async (req, res) => {
     try {
-        const { ticketId, agentId } = req.body;
+        const { ticketId, agentId, customerId } = req.body;
 
         let support = await Support.findOne({ ticketId });
 
         if (support) {
             support.agentId = agentId;
             support.status = "In Progress";
+            if (customerId) support.customerId = customerId;
         } else {
             support = new Support({
                 ticketId,
                 agentId,
+                customerId,
                 status: "In Progress"
             });
         }
@@ -95,7 +97,7 @@ exports.resolveTicket = async (req, res) => {
         publishEvent({
             event: "ticket_status_updated",
             ticketId,
-            data: { status: "Resolved" }
+            data: { status: "Resolved", customerId: support.customerId }
         });
 
         res.status(200).json({ message: "Ticket resolved successfully", data: support });

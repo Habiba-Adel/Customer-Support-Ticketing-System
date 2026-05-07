@@ -1,22 +1,22 @@
 import { useState, useEffect } from "react";
 import styles from "./Notifications.module.css";
-import { getNotifications , markAsRead  } from "../../api";
+import { getNotifications, markAsRead } from "../../api";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const handleNotificationClick = async (id) => {
-  try {
-    await markAsRead(id);
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n._id === id ? { ...n, read: true } : n
-      )
-    );
-  } catch (error) {
-    console.error("Error marking notification as read:", error);
-  }
-};
+    try {
+      await markAsRead(id);
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n._id === id ? { ...n, read: true } : n
+        )
+      );
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -78,7 +78,7 @@ const Notifications = () => {
               </div>
 
               <div className={styles.content}>
-                <div className={styles.title}>{note.type.replaceAll("_", " ")}</div>
+                <div className={styles.title}>{note.type?.replaceAll("_", " ") || 'Notification'}</div>
                 <p className={styles.message}>{note.message}</p>
               </div>
 

@@ -8,7 +8,6 @@ router.get("/:userId", async (req, res) => {
     const notifications = await Notification.find({
       userId: req.params.userId,
     })
-      .populate("ticketId", "title status")
       .sort({ createdAt: -1 });
     res.json(notifications);
   } catch (err) {

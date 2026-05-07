@@ -6,6 +6,10 @@ const supportSchema = new mongoose.Schema({
         required: true,
         unique: true // A ticket can only have one assignment record
     },
+    customerId: {
+        type: String,
+        default: null
+    },
     agentId: {
         type: String,
         required: true
@@ -18,8 +22,8 @@ const supportSchema = new mongoose.Schema({
         type: String,
         enum: ['Open', 'In Progress', 'Resolved', 'Closed'],
         default: 'Open'
-    } ,
-     messages: [
+    },
+    messages: [
         {
             sender: {
                 type: String, // "agent" or "customer"

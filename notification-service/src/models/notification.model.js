@@ -16,6 +16,8 @@ const notificationSchema = new mongoose.Schema(
         "status_updated",
         "ticket_resolved",
         "ticket_closed",
+        "ticket_status_updated",
+        "ticket_assigned",
       ],
       required: true,
     },
