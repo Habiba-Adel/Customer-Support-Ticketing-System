@@ -1,40 +1,45 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const supportSchema = new mongoose.Schema({
-    ticketId: {
+  ticketId: {
+    type: String,
+    required: true,
+    unique: true, // A ticket can only have one assignment record
+  },
+  agentId: {
+    type: String,
+    required: true,
+  },
+  assignedAt: {
+    type: Date,
+    default: Date.now,
+  },
+  status: {
+    type: String,
+    enum: ["Open", "In Progress", "Resolved", "Closed"],
+    default: "Open",
+  },
+  priority: {
+    type: String,
+    enum: ["Low", "Medium", "High"],
+    default: "Medium",
+  },
+  messages: [
+    {
+      sender: {
+        type: String, // "agent" or "customer"
+        required: true,
+      },
+      message: {
         type: String,
         required: true,
-        unique: true // A ticket can only have one assignment record
-    },
-    agentId: {
-        type: String,
-        required: true
-    },
-    assignedAt: {
+      },
+      createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+      },
     },
-    status: {
-        type: String,
-        enum: ['Open', 'In Progress', 'Resolved', 'Closed'],
-        default: 'Open'
-    } ,
-     messages: [
-        {
-            sender: {
-                type: String, // "agent" or "customer"
-                required: true
-            },
-            message: {
-                type: String,
-                required: true
-            },
-            createdAt: {
-                type: Date,
-                default: Date.now
-            }
-        }
-    ]
+  ],
 });
 
-module.exports = mongoose.model('Support', supportSchema);
+module.exports = mongoose.model("Support", supportSchema);

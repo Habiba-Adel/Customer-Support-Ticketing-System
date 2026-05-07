@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from './Auth.module.css';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, registerUser } from '../api';
+import toast from 'react-hot-toast';
 
 
 export default function Auth({ onLogin }) {
@@ -20,21 +21,26 @@ export default function Auth({ onLogin }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
+    // You can even use a promise toast for the whole process
+    const loginPromise = (async () => {
       let result;
 
       if (isLogin) {
-        // ── LOGIN ──
         result = await loginUser({
           email: formData.email,
           password: formData.password,
         });
+
+        // Handle the "Logged in as wrong role" case
+        if (result && result.user && result.user.role !== role) {
+          throw new Error(`Account registered as ${result.user.role}. Change selection.`);
+        }
       } else {
-        // ── REGISTER ──
         const registerResult = await registerUser({
           name: formData.fullName,
           email: formData.email,
@@ -42,65 +48,50 @@ export default function Auth({ onLogin }) {
           role,
         });
 
-        if (registerResult.error) {
-          throw new Error(registerResult.message || "Registration failed");
-        }
+        if (registerResult.error) throw new Error(registerResult.message);
 
-        // Auto-login after successful registration
         result = await loginUser({
           email: formData.email,
           password: formData.password,
         });
       }
 
-      // ── SESSION MANAGEMENT ──
-      if (result && result.token) {
-        localStorage.setItem("token", result.token);
-        localStorage.setItem("user", JSON.stringify(result.user));
+      if (!result || !result.token) {
+        throw new Error(result?.message || "Authentication failed");
+      }
 
-        // Update App state
-        onLogin({
-          id: result.user._id,
-          name: result.user.name,
-          role: result.user.role,
-          notifications: 0,
-        });
+      // Success logic
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      onLogin({
+        id: result.user._id,
+        name: result.user.name,
+        role: result.user.role,
+      });
 
-        // Role-based redirection
-        if (result.user.role === "agent") {
-          navigate("/agent/workspace");
-        } else {
-          navigate("/customer/tickets");
-        }
+      return result.user;
+    })();
+
+    toast.promise(loginPromise, {
+      loading: 'Authenticating...',
+      success: (user) => `Welcome back, ${user.name}!`,
+      error: (err) => `${err.message}`,
+    });
+
+    try {
+      const user = await loginPromise;
+      // Redirection happens after toast starts
+      if (user.role === "agent") {
+        navigate("/agent/workspace");
       } else {
-        alert(result.message || "Authentication failed");
+        navigate("/customer/tickets");
       }
     } catch (err) {
-      console.error("Auth Error:", err);
-      alert(
-        err.message || "Something went wrong. Please check your connection.",
-      );
+      // Error is already handled by toast.promise
     } finally {
       setLoading(false);
     }
   };
-
-  // Auth.jsx
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   onLogin({
-  //     name: formData.fullName || "User",
-  //     role: role,
-  //     notifications: 0
-  //   });
-
-  //   if (role === 'agent') {
-  //     navigate('/agent/workspace');
-  //   } else {
-  //     navigate('/customer/tickets');
-  //   }
-  // };
 
   return (
     <div className={styles.authContainer}>

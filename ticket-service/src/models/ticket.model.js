@@ -11,18 +11,18 @@ const ticketSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["Open", "In Progress", "Resolved", "Closed"],
-    default: "Open"
+    default: "Open",
   },
 
   priority: {
     type: String,
     enum: ["Low", "Medium", "High"],
-    default: "Medium"
+    default: "Medium",
   },
 
   resolvedAt: { type: Date, default: null },
 
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Ticket", ticketSchema);

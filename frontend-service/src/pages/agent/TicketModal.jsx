@@ -125,7 +125,7 @@
 //               Send
 //             </button>
 //           </div>
-          
+
 //         ) : (
 //           <div className="pt-3 border-top text-center">
 //             <p className="text-muted small italic">
@@ -232,7 +232,7 @@ export default function TicketModal({ ticket, onClose, onRefresh }) {
               />
               <button className="btn btn-dark px-4" onClick={handleSendResponse}>Send</button>
             </div>
-           
+
           </div>
         ) : (
           <div className="pt-3 border-top text-center">
