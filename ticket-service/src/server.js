@@ -3,6 +3,7 @@ const app = require("./app");
 const connectDB = require("./config/db");
 const { connectRabbitMQ } = require("./config/rabbitmq");
 const startConsumer = require("./consumers/support.consumer");
+require("dotenv").config();
 
 
 

@@ -48,6 +48,8 @@ services:
     build: ./ticket-service
     container_name: ticket-service
     restart: unless-stopped
+    ports:
+    - "3003:3003"
     environment:
       PORT: 3003
       MONGODB_URI: mongodb://mongodb:27017/ticket_db
