@@ -108,31 +108,6 @@ exports.resolveTicket = async (req, res) => {
   }
 };
 
-exports.closeTicket = async (req, res) => {
-  try {
-    const { ticketId } = req.params;
-    const support = await Support.findOne({ ticketId });
-    if (!support) {
-      return res.status(404).json({ message: "Ticket not found" });
-    }
-    support.status = "Closed";
-    await support.save();
-
-    // publish to ticket-service to update ticket_db
-    publishEvent({
-      event: "ticket_status_updated",
-      ticketId,
-      data: { status: "Closed" },
-    });
-
-    res
-      .status(200)
-      .json({ message: "Ticket closed successfully", data: support });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 exports.reopenTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
