@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { useEffect, useState } from 'react';
 import styles from './Reports.module.css';
 import StatRow from '../StatRow';
@@ -19,27 +19,6 @@ export default function Reports() {
 
   // Get Data From Backend
   useEffect(() => {
-    // const fetchReportData = async () => {
-    //   setLoading(true);
-    //   try {
-    //     // Fetch all reporting data in parallel
-    //     const [totalRes, statusRes, priorityRes, avgRes] = await Promise.all([
-    //       getTotalTickets(),
-    //       getStatusCounts(),
-    //       getPriorityCounts(),
-    //       getAvgResolution()
-    //     ]);
-    //     setTotal(totalRes.total || 0);
-    //     setStatusData(statusRes || {});
-    //     setPriorityData(priorityRes || {});
-    //     setAvgTime(avgRes.averageResolutionTime || "0 hours");
-    //   } catch (error) {
-    //     console.error("Failed to fetch report data:", error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-
     const fetchReportData = async () => {
   setLoading(true);
   try {
