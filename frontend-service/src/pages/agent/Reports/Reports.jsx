@@ -84,7 +84,6 @@ export default function Reports() {
             <StatRow label="Open" count={statusData.Open || 0} total={total} color="var(--open-status)" />
             <StatRow label="In Progress" count={statusData["In Progress"] || 0} total={total} color="var(--in-progress-status)" />
             <StatRow label="Resolved" count={statusData.Resolved || 0} total={total} color="var(--closed-status)" />
-            <StatRow label="Closed" count={statusData.Closed || 0} total={total} color="var(--neutral-gray)" />
           </div>
         </div>
 
