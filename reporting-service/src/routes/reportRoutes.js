@@ -79,45 +79,4 @@ router.get('/average-resolution', async (req, res) => {
     }
 });
 
-// //5th report:
-// router.get('/agent-performance', async (req, res) => {
-//     try {
-//         const performance = await Ticket.aggregate([
-//             {
-//                 // ignore tickets that aren't assigned to anyone yet
-//                 $match: { assignedAgentId: { $ne: null } }
-//             },
-//             {
-//                 // group tickets by agent
-//                 $group: {
-//                     _id: "$assignedAgentId",
-//                     totalAssigned: { $sum: 1 },
-//                     closedCount: {
-//                         $sum: {
-//                             $cond: [{ $eq: ["$status", "Closed"] }, 1, 0]
-//                         }
-//                     }
-//                 }
-//             },
-//             {
-//                 // calculate percentage
-//                 $project: {
-//                     agentId: "$_id",
-//                     totalAssigned: 1,
-//                     closedCount: 1,
-//                     closureRate: {
-//                         $multiply: [
-//                             { $divide: ["$closedCount", "$totalAssigned"] },
-//                             100
-//                         ]
-//                     }
-//                 }
-//             }
-//         ]);
-//         res.json(performance);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// });
-
 module.exports = router;
