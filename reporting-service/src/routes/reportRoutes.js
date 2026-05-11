@@ -68,7 +68,6 @@ router.get('/average-resolution', async (req, res) => {
                 $group: {
                     _id: null,
                     averageTimeHours: {
-                        // max [0, value] ensures you never see a negative number
                         $avg: { $max: [0, { $divide: ["$resolutionTimeMs", 3600000] }] } // Convert milliseconds to hours
                     }
                 }
@@ -80,45 +79,45 @@ router.get('/average-resolution', async (req, res) => {
     }
 });
 
-//5th report: Agent Performance
-router.get('/agent-performance', async (req, res) => {
-    try {
-        const performance = await Ticket.aggregate([
-            {
-                // ignore tickets that aren't assigned to anyone yet
-                $match: { assignedAgentId: { $ne: null } }
-            },
-            {
-                // group tickets by agent
-                $group: {
-                    _id: "$assignedAgentId",
-                    totalAssigned: { $sum: 1 },
-                    closedCount: {
-                        $sum: {
-                            $cond: [{ $eq: ["$status", "Closed"] }, 1, 0]
-                        }
-                    }
-                }
-            },
-            {
-                // calculate percentage
-                $project: {
-                    agentId: "$_id",
-                    totalAssigned: 1,
-                    closedCount: 1,
-                    closureRate: {
-                        $multiply: [
-                            { $divide: ["$closedCount", "$totalAssigned"] },
-                            100
-                        ]
-                    }
-                }
-            }
-        ]);
-        res.json(performance);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+// //5th report:
+// router.get('/agent-performance', async (req, res) => {
+//     try {
+//         const performance = await Ticket.aggregate([
+//             {
+//                 // ignore tickets that aren't assigned to anyone yet
+//                 $match: { assignedAgentId: { $ne: null } }
+//             },
+//             {
+//                 // group tickets by agent
+//                 $group: {
+//                     _id: "$assignedAgentId",
+//                     totalAssigned: { $sum: 1 },
+//                     closedCount: {
+//                         $sum: {
+//                             $cond: [{ $eq: ["$status", "Closed"] }, 1, 0]
+//                         }
+//                     }
+//                 }
+//             },
+//             {
+//                 // calculate percentage
+//                 $project: {
+//                     agentId: "$_id",
+//                     totalAssigned: 1,
+//                     closedCount: 1,
+//                     closureRate: {
+//                         $multiply: [
+//                             { $divide: ["$closedCount", "$totalAssigned"] },
+//                             100
+//                         ]
+//                     }
+//                 }
+//             }
+//         ]);
+//         res.json(performance);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// });
 
 module.exports = router;
